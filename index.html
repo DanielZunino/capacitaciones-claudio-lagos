@@ -8383,6 +8383,15 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   });
 })();
 
+// ====== Inscripción guiada de Claudio Lagos: el botón "INSCRIBIRME" abre la ficha nueva paso a paso ======
+(() => {
+  const URL_INS = 'https://danielzunino.github.io/capacitaciones-claudio-lagos/inscripcion.html';
+  try { IND_FORMULARIO = URL_INS; } catch (e) {}
+  const fix = () => document.querySelectorAll('a.insBtn, a.indbtn').forEach(a => { if (a.getAttribute('href') !== URL_INS) { a.setAttribute('href', URL_INS); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener'); } });
+  fix(); new MutationObserver(fix).observe(document.documentElement, { childList: true, subtree: true });
+  document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.insBtn'); if (a && !a.href) { e.preventDefault(); window.open(URL_INS, '_blank'); } }, true);
+})();
+
 // ===== Transportes Claudio Lagos: temas por sección, "Mi ruta" según el cargo, empresa y obra =====
 ['horquilla', 'horquilla_patio', 'horquilla_checklist', 'racks', 'atencion_publico', 'asaltos', 'sala_ventas', 'camion_estiba', 'camion_carga'].forEach(id => { const i = TOPICS.findIndex(t => t.id === id); if (i >= 0) TOPICS.splice(i, 1); });
 const SECCIONES = [
