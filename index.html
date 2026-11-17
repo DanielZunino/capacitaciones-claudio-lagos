@@ -7685,7 +7685,7 @@ function clBatea(x, y, s, o) {
   g += `<rect x="0" y="-36" width="${152 + DX}" height="6" fill="#26282A"/><rect x="2" y="-32" width="${150 + DX}" height="3" fill="#3C3F42"/>`;
   const A = o.ang || 0;
   const box = `<path d="M0,-40 H${BL} V-116 H8 q-8,0 -8,8z" fill="#FAFAFB" stroke="${CLK}" stroke-width="1.8"/>`
-    + Array.from({ length: Math.floor(BL / 15) - 1 }, (_, i) => `<line x1="${(i + 1) * 15}" y1="-112" x2="${(i + 1) * 15}" y2="-44" stroke="#D5D8DC" stroke-width="2"/>`).join('')
+    + `<text x="${BL / 2}" y="-76" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="34" letter-spacing="2" fill="#1B2A5C" stroke="#fff" stroke-width=".6">RANDON</text>`
     + `<rect x="0" y="-120" width="${BL}" height="5" fill="#FFFFFF" stroke="${CLK}" stroke-width="1.2"/><rect x="0" y="-62" width="${BL}" height="5" fill="${CLR}"/>`
     + (o.load ? `<g>${clBiomasa(8, -112, BL - 16, 22)}</g>` : '');
   let rot;
@@ -8363,13 +8363,13 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   // --- camión: inspección antes de salir
   const cc = T('camion_conduccion');
   if (cc) {
-    cc.learn.push(L('cla_insp', 'Actividad: revise su camión antes de salir', 'Antes de partir recorre el camión: <b>neumáticos</b> (presión y desgaste), <b>luces</b> y reflectantes, <b>espejos</b>, <b>fugas</b> de aceite o combustible, <b>frenos</b>, <b>quinta rueda</b> y amarres. Un problema detectado a tiempo evita un accidente.', 'Ronda de 3 minutos antes de salir.'));
+    cc.learn.push(L('cla_insp', 'Revise su camión antes de salir', 'Antes de partir recorre el camión: <b>neumáticos</b> (presión y desgaste), <b>luces</b> y reflectantes, <b>espejos</b>, <b>fugas</b> de aceite o combustible, <b>frenos</b>, <b>quinta rueda</b> y amarres. Un problema detectado a tiempo evita un accidente.', 'Ronda de 3 minutos antes de salir.'));
     cc.quiz.push({ q: 'Actividad: encuentre los 4 problemas del camión', hot: 'cla_insp', w: 'Problemas: neumático desinflado, fuga de aceite, luz trasera rota y espejo suelto. Si encuentras uno, no sales: avisas a tu jefatura.' });
   }
   // --- inducción: dinámica con el resto de la faena
   const ind = T('induccion');
   if (ind) {
-    ind.learn.splice(1, 0, L('cla_ind_faena', 'Actividad: ¿qué riesgos ve en la faena?', 'Mira la imagen con ojo de prevencionista. En tu trabajo verás estas situaciones: <b>personas sin EPP</b>, <b>uso del celular</b>, <b>gente cerca del cargador</b>. Reconocerlas a tiempo es el primer paso del autocuidado.', 'Reconocer el riesgo es el primer paso.'));
+    ind.learn.splice(1, 0, L('cla_ind_faena', 'Riesgos que verás en la faena', 'Mira la imagen con ojo de prevencionista. En tu trabajo verás estas situaciones: <b>personas sin EPP</b>, <b>uso del celular</b>, <b>gente cerca del cargador</b>. Reconocerlas a tiempo es el primer paso del autocuidado.', 'Reconocer el riesgo es el primer paso.'));
     ind.quiz.splice(1, 0, { q: 'Actividad: toque los 3 riesgos que ve en la faena', hot: 'cla_ind_faena', w: 'Riesgos: persona sin casco ni chaleco, uso del celular en la faena y gente cerca del cargador en movimiento.' });
     ind.learn.splice(3, 0, L('cla_bat_ok', 'Batea: levantarla de forma SEGURA', '<ul><li>Terreno <b>plano, firme y estable</b>.</li><li>Nadie detrás ni al costado; <b>sin cables</b> encima.</li><li><b>Freno de mano</b> puesto y levantar <b>despacio</b>.</li></ul>', 'Plano, despejado, freno y lento.'), L('cla_bat_pend', 'Batea: levantarla de forma INSEGURA', 'En una <b>pendiente</b> o suelo blando el camión puede <b>volcar</b> con la batea arriba. Tampoco se levanta con gente detrás ni bajo cables eléctricos.', 'Pendiente o suelo blando: no se levanta.'));
     ind.quiz.splice(2, 0, _clPick('¿Qué camión levanta la batea de forma segura?', ['cla_bat_pend', 'cla_bat_ok'], 1, 'En terreno plano y despejado. En pendiente el camión puede volcar.'));
