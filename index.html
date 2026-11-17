@@ -7652,7 +7652,7 @@ function clTrailerG(L, o) {
 }
 // ---- RAMPLA(L,o): misma firma que la heredada (parte trasera x=0, suelo y=0, largo total ≈ L+66), ahora con el camión blanco del logo
 function RAMPLA(L, o) {
-  o = o || {}; L = L || 150; const s = .78, n = f1c;
+  o = o || {}; L = (L || 150) * 1.25; const s = .78, n = f1c;
   let g = `<ellipse cx="${n((L + 66) / 2)}" cy="1" rx="${n((L + 66) / 2 + 4)}" ry="4" fill="#000" opacity=".22"/>`;
   g += clTrailerG(L, Object.assign({}, o, { open: !!o.open }));
   const tx = L - 22 - 154 * s;
@@ -7663,20 +7663,21 @@ function RAMPLA(L, o) {
   return g;
 }
 function RAMPLA_ABS(x, y, D, W, o) {
-  o = o || {}; const k = D / 46, L = W / k - 66;
+  o = o || {}; const k0 = D / 46, L0 = Math.max(60, W / k0 - 66), Lp = L0 * 1.25, k = k0 * (L0 + 66) / (Lp + 66);
   const load = o.load ? `<g transform="scale(${1 / k}) translate(${-x},${-y})">${o.load}</g>` : '';
-  return `<g transform="translate(${x},${y}) scale(${k})">${RAMPLA(L, Object.assign({}, o, { load }))}</g>`;
+  return `<g transform="translate(${x},${y}) scale(${k})">${RAMPLA(Lp / 1.25, Object.assign({}, o, { load }))}</g>`;
 }
 // ---- Camión del logo completo (rampla cerrada + tracto). (0,0)=suelo bajo la parte trasera. Largo ≈ 252
 function clCamion(x, y, s, o) {
-  o = o || {}; s = s || 1;
-  let g = `<ellipse cx="126" cy="1" rx="132" ry="4" fill="#000" opacity=".22"/>`;
-  g += clTrailerG(172, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
+  o = o || {}; s = (s || 1) * .87; const LT = 215;
+  let g = `<ellipse cx="${LT / 2 + 63}" cy="1" rx="${LT / 2 + 70}" ry="4" fill="#000" opacity=".22"/>`;
+  g += clTrailerG(LT, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
   if (o.rear) g += `<rect x="-6" y="-100" width="7" height="62" fill="#5E6166" stroke="${CLK}"/><g>${clBiomasa(-52, 0, 54, 24)}</g>`;
-  g += clTractorG({ driver: o.driver });
+  g += `<g transform="translate(${LT - 172},0)">${clTractorG({ driver: o.driver })}</g>`;
   if (o.brake) g += `<g class="an-flash"><circle cx="-1" cy="-40" r="9" fill="#FF1744" opacity=".5"/></g>`;
   return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
 }
+
 // ---- Camión BATEA (volquete): chasis rígido, cabina del logo, batea gris que gira sobre su bisagra trasera.
 // (0,0) = suelo bajo la bisagra trasera. Largo ≈ 252. o.ang = grados de levante fijo; o.anim = 'sube' (sube y baja en bucle)
 function clBatea(x, y, s, o) {
@@ -8390,6 +8391,24 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   const fix = () => document.querySelectorAll('a.insBtn, a.indbtn').forEach(a => { if (a.getAttribute('href') !== URL_INS) { a.setAttribute('href', URL_INS); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener'); } });
   fix(); new MutationObserver(fix).observe(document.documentElement, { childList: true, subtree: true });
   document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a.insBtn'); if (a && !a.href) { e.preventDefault(); window.open(URL_INS, '_blank'); } }, true);
+})();
+
+/* ---- proporción: personas más pequeñas respecto a camiones/cargador ---- */
+(function () {
+  if (typeof W !== 'function') return;
+  const W0 = W; let scale = 1, truck = false;
+  const mark = n => { const f = window[n] || (typeof eval(n) === 'function' ? eval(n) : null); };
+  W = function (x, y, o) { o = Object.assign({}, o || {}); o.s = (o.s || 1) * scale; return W0(x, y, o); };
+  const hasT = h => /#B8BCC0|#9A9FA5/.test(h) || /clCabG|RAMPLA/.test(h);
+  Object.keys(S).forEach(k => {
+    if (/^cla_|^cl_piso_(mecanismo|zona_mal|zona_ok)$/.test(k)) return;
+    const f = S[k];
+    S[k] = function () {
+      scale = 1; const a = f.apply(this, arguments);
+      if (!/#B8BCC0|#9A9FA5|#F5F5F5/.test(a) || !/(translate\([^)]*\) scale\([^)]*\)).*(ellipse)/s.test(a)) return a;
+      scale = .62; try { return f.apply(this, arguments); } finally { scale = 1; }
+    };
+  });
 })();
 
 // ===== Transportes Claudio Lagos: temas por sección, "Mi ruta" según el cargo, empresa y obra =====
