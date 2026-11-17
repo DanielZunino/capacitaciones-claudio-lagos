@@ -1,0 +1,27 @@
+name: Publicar plataforma
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Descargar archivos desde Drive
+        run: |
+          curl -fL "https://drive.google.com/uc?export=download&id=1Lh2hfOxZTegAy-yE5F5iV_sQ7XzOPgql" -o index.html
+          curl -fL "https://drive.google.com/uc?export=download&id=1Hhll363NYxIz2b5vIMH1YWwpKNkM-cAm" -o panel.html
+          head -c 15 index.html; echo; head -c 15 panel.html; echo
+          grep -q "<title>Capacitaciones Transportes Claudio Lagos" index.html
+          grep -qi "<!doctype html" panel.html
+          touch .nojekyll
+      - name: Guardar en el repositorio
+        run: |
+          git config user.name "Publicador"
+          git config user.email "publicador@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Publicar plataforma Claudio Lagos"
+          git push
