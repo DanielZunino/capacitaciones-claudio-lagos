@@ -7669,7 +7669,7 @@ function RAMPLA_ABS(x, y, D, W, o) {
 }
 // ---- Camión del logo completo (rampla cerrada + tracto). (0,0)=suelo bajo la parte trasera. Largo ≈ 252
 function clCamion(x, y, s, o) {
-  o = o || {}; s = (s || 1) * (o.LT ? .87 * 215 / o.LT : .87); const LT = o.LT || 215;
+  o = o || {}; s = (s || 1) * (o.LT ? 239 / (o.LT + 80) : .87); const LT = o.LT || 215;
   let g = `<ellipse cx="${LT / 2 + 63}" cy="1" rx="${LT / 2 + 70}" ry="4" fill="#000" opacity=".22"/>`;
   g += clTrailerG(LT, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
   if (o.rear) g += `<rect x="-6" y="-100" width="7" height="62" fill="#5E6166" stroke="${CLK}"/><g>${clBiomasa(-52, 0, 54, 24)}</g>`;
@@ -7681,13 +7681,13 @@ function clCamion(x, y, s, o) {
 // ---- Camión BATEA (volquete): chasis rígido, cabina del logo, batea gris que gira sobre su bisagra trasera.
 // (0,0) = suelo bajo la bisagra trasera. Largo ≈ 252. o.ang = grados de levante fijo; o.anim = 'sube' (sube y baja en bucle)
 function clBatea(x, y, s, o) {
-  o = o || {}; s = s || 1; const BL = 176, DX = 44; let g = `<ellipse cx="${126 + DX / 2}" cy="1" rx="${132 + DX / 2}" ry="4" fill="#000" opacity=".22"/>`;
+  o = o || {}; s = s || 1; const BL = 322, DX = 190; s = s * .62; let g = `<ellipse cx="${126 + DX / 2}" cy="1" rx="${132 + DX / 2}" ry="4" fill="#000" opacity=".22"/>`;
   g += `<rect x="0" y="-36" width="${152 + DX}" height="6" fill="#26282A"/><rect x="2" y="-32" width="${150 + DX}" height="3" fill="#3C3F42"/>`;
   const A = o.ang || 0;
-  const box = `<path d="M0,-40 H${BL} V-116 H8 q-8,0 -8,8z" fill="#FAFAFB" stroke="${CLK}" stroke-width="1.8"/>`
-    + `<text x="${BL / 2}" y="-76" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="34" letter-spacing="2" fill="#1B2A5C" stroke="#fff" stroke-width=".6">RANDON</text>`
-    + `<rect x="0" y="-120" width="${BL}" height="5" fill="#FFFFFF" stroke="${CLK}" stroke-width="1.2"/><rect x="0" y="-62" width="${BL}" height="5" fill="${CLR}"/>`
-    + (o.load ? `<g>${clBiomasa(8, -112, BL - 16, 22)}</g>` : '');
+  const box = `<path d="M0,-40 H${BL} V-140 H8 q-8,0 -8,8z" fill="#FAFAFB" stroke="${CLK}" stroke-width="1.8"/>`
+    + `<text x="${BL / 2}" y="-84" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="42" letter-spacing="2" fill="#1B2A5C" stroke="#fff" stroke-width=".6">RANDON</text>`
+    + `<rect x="0" y="-144" width="${BL}" height="5" fill="#FFFFFF" stroke="${CLK}" stroke-width="1.2"/><rect x="0" y="-62" width="${BL}" height="5" fill="${CLR}"/>`
+    + (o.load ? `<g>${clBiomasa(8, -136, BL - 16, 26)}</g>` : '');
   let rot;
   if (o.anim) rot = `<animateTransform attributeName="transform" type="rotate" values="0 4 -40;${-(A || 38)} 4 -40;${-(A || 38)} 4 -40;0 4 -40;0 4 -40" keyTimes="0;.35;.6;.95;1" dur="5s" repeatCount="indefinite"/>`;
   else rot = '';
@@ -7698,6 +7698,32 @@ function clBatea(x, y, s, o) {
   return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
 }
 
+
+// ---- Cargador frontal amarillo (nuevo): ruedas grandes, cabina con vidrio, brazos, cilindro y balde
+function clCargador(x, y, s, o) {
+  o = o || {}; s = (s || 1) * .8; const lift = o.lift || 0, Y = '#FFC20E', Yd = '#D99A00', K = '#111';
+  const w = cx => `<g transform="translate(${cx},-25)"><circle r="25" fill="#1F2123" stroke="#000" stroke-width="2"/><circle r="19" fill="none" stroke="#3E4247" stroke-width="3" stroke-dasharray="5 4"/><circle r="11" fill="#B0B5BA" stroke="#000" stroke-width="1.5"/><circle r="4" fill="#444"/></g>`;
+  const ex = 214, ey = -42 - lift * 1.1;
+  let g = `<ellipse cx="125" cy="1" rx="136" ry="4.5" fill="#000" opacity=".22"/>`;
+  // brazos (detrás)
+  g += `<line x1="120" y1="-98" x2="${ex}" y2="${ey}" stroke="${K}" stroke-width="10" stroke-linecap="round"/><line x1="120" y1="-98" x2="${ex}" y2="${ey}" stroke="${Y}" stroke-width="6" stroke-linecap="round"/>`;
+  g += `<line x1="150" y1="-58" x2="${f1c(120 + (ex - 120) * .62)}" y2="${f1c(-98 + (ey + 98) * .62)}" stroke="#7D838A" stroke-width="6" stroke-linecap="round"/><line x1="150" y1="-58" x2="${f1c(120 + (ex - 120) * .62)}" y2="${f1c(-98 + (ey + 98) * .62)}" stroke="#C9CDD1" stroke-width="2.5" stroke-linecap="round"/>`;
+  // ruedas y chasis
+  g += w(62) + w(176);
+  g += `<rect x="96" y="-62" width="96" height="28" rx="6" fill="${Y}" stroke="${K}" stroke-width="2"/>`;
+  g += `<rect x="18" y="-72" width="86" height="40" rx="9" fill="${Y}" stroke="${K}" stroke-width="2"/><rect x="18" y="-50" width="86" height="4" fill="${Yd}"/>`;
+  g += `<rect x="10" y="-66" width="14" height="30" rx="4" fill="${Yd}" stroke="${K}" stroke-width="1.8"/>`;
+  g += [0, 1, 2].map(i => `<line x1="${30 + i * 6}" y1="-68" x2="${30 + i * 6}" y2="-56" stroke="${K}" stroke-width="1.6"/>`).join('');
+  g += `<rect x="36" y="-102" width="5" height="32" fill="#4A4F54" stroke="${K}" stroke-width="1.2"/><rect x="34" y="-105" width="9" height="4" fill="#4A4F54"/>`;
+  // cabina
+  g += `<rect x="66" y="-122" width="64" height="56" rx="5" fill="${Y}" stroke="${K}" stroke-width="2"/><rect x="72" y="-116" width="52" height="42" rx="3" fill="#A9DDF7" stroke="${K}" stroke-width="1.6"/><line x1="98" y1="-116" x2="98" y2="-74" stroke="${K}" stroke-width="1.4" opacity=".6"/>`;
+  g += `<rect x="61" y="-127" width="74" height="6" rx="2" fill="#2B2D2F" stroke="${K}"/>`;
+  if (o.driver) g += `<circle cx="86" cy="-92" r="7" fill="#F2C6A0" stroke="#22303A"/><path d="M79,-94 a7,7 0 0 1 14,0z" fill="#fff" stroke="#22303A" stroke-width="1"/><rect x="80" y="-84" width="12" height="10" fill="#FF6F00"/>`;
+  g += `<g class="an-flash"><rect x="94" y="-136" width="9" height="9" rx="3" fill="#FF9800" stroke="${K}"/></g>`;
+  // balde
+  g += `<g transform="translate(${ex},${ey})"><path d="M-10,-36 L44,-36 L38,12 L-14,12 Z" fill="${Yd}" stroke="${K}" stroke-width="2"/><rect x="-16" y="9" width="58" height="6" rx="1" fill="#2B2D2F"/><circle cx="0" cy="0" r="4" fill="#555" stroke="${K}"/>${o.load ? clBiomasa(-8, -36, 50, 18) : ''}</g>`;
+  return `<g transform="translate(${x},${y}) scale(${s})">${g}</g>`;
+}
 
 // ===== Claudio Lagos: escenas y charlas nuevas =====
 // ---------- Escenas: FATIGA / CONDUCCIÓN ----------
@@ -7716,15 +7742,15 @@ S.cl_ripio = () => sv(clForest() + clCamion(56, 172, .72, { driver: true }) + `<
 S.cl_cruce = () => sv(clRoad() + `<rect x="226" y="60" width="4" height="90" fill="#5F666D"/><rect x="208" y="54" width="40" height="14" fill="#fff" stroke="#C62828" stroke-width="2"/>` + txt(228, 65, 'PARE', 11, '#C62828') + clCamion(10, 172, .66, {}) + clMan(278, 168, { pose: 'stop', s: .8 }) + clLbl(160, 28, 'Peatones y ciclistas: ceda el paso', '#1565C0', 13));
 
 // ---------- Escenas: PISO CAMINANTE / BIOMASA / PLANTA ----------
-S.cl_piso_intro = () => sv(clPlanta() + clCamion(50, 172, 1.05, { LT: 290, rear: true }) + clBanner('Piso caminante'));
+S.cl_piso_intro = () => sv(clPlanta() + clCamion(50, 172, 1.05, { LT: 430, rear: true }) + clBanner('Piso caminante'));
 S.cl_piso_mecanismo = () => sv(`<rect width="320" height="200" fill="#EEF2F6"/><rect x="20" y="54" width="280" height="96" fill="#8D9096" stroke="${CLK}" stroke-width="2"/>` + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => `<rect x="${24 + i * 23}" y="${112 + (i % 3) * 3}" width="19" height="9" fill="${i % 3 == 0 ? '#E0E0E0' : '#B0B3B8'}" stroke="${CLK}"/>`).join('') + clBiomasa(30, 112, 250, 48) + clArrow(60, 138, 270, 138, CLR, 4) + clLbl(160, 28, 'Las tablillas empujan la carga hacia atrás', '#263238', 12) + clFlash(290, 70, 11));
-S.cl_piso_zona_mal = () => sv(clPlanta() + clCamion(66, 172, 1.0, { LT: 290, rear: true }) + clMan(30, 168, { pose: 'stand' }) + clFlash(30, 80, 11) + badge(290, 40, false));
-S.cl_piso_zona_ok = () => sv(clPlanta() + clCamion(28, 172, .8, { LT: 290, rear: true }) + clMan(268, 168, { pose: 'point', flip: true }) + badge(290, 40, true));
-S.cl_piso_control = () => sv(clPlanta() + clCamion(10, 172, .85, { LT: 290 }) + `<rect x="232" y="108" width="26" height="40" rx="3" fill="#37474F" stroke="${CLK}" stroke-width="1.6"/><circle cx="245" cy="122" r="7" fill="${CLR}" stroke="#fff" stroke-width="2"/><rect x="238" y="134" width="14" height="8" fill="#2E7D32"/>` + clLbl(245, 100, 'PARADA', CLR, 10) + clMan(285, 168, { pose: 'point', flip: true, s: .9 }));
-S.cl_piso_bloqueo = () => sv(clTaller() + clCamion(20, 172, .78, { LT: 290, rear: true }) + `<rect x="236" y="74" width="40" height="30" rx="3" fill="#FFC20E" stroke="#C79200" stroke-width="2"/>` + `<path d="M248,74 v-8 a8,8 0 0 1 16,0 v8" fill="none" stroke="#5F666D" stroke-width="3"/>` + txt(256, 94, 'LOTO', 11, '#263238') + clLbl(160, 28, 'Apague, bloquee y etiquete', '#C62828', 13));
+S.cl_piso_zona_mal = () => sv(clPlanta() + clCamion(66, 172, 1.0, { LT: 430, rear: true }) + clMan(30, 168, { pose: 'stand' }) + clFlash(30, 80, 11) + badge(290, 40, false));
+S.cl_piso_zona_ok = () => sv(clPlanta() + clCamion(28, 172, .8, { LT: 430, rear: true }) + clMan(268, 168, { pose: 'point', flip: true }) + badge(290, 40, true));
+S.cl_piso_control = () => sv(clPlanta() + clCamion(10, 172, .85, { LT: 430 }) + `<rect x="232" y="108" width="26" height="40" rx="3" fill="#37474F" stroke="${CLK}" stroke-width="1.6"/><circle cx="245" cy="122" r="7" fill="${CLR}" stroke="#fff" stroke-width="2"/><rect x="238" y="134" width="14" height="8" fill="#2E7D32"/>` + clLbl(245, 100, 'PARADA', CLR, 10) + clMan(285, 168, { pose: 'point', flip: true, s: .9 }));
+S.cl_piso_bloqueo = () => sv(clTaller() + clCamion(20, 172, .78, { LT: 430, rear: true }) + `<rect x="236" y="74" width="40" height="30" rx="3" fill="#FFC20E" stroke="#C79200" stroke-width="2"/>` + `<path d="M248,74 v-8 a8,8 0 0 1 16,0 v8" fill="none" stroke="#5F666D" stroke-width="3"/>` + txt(256, 94, 'LOTO', 11, '#263238') + clLbl(160, 28, 'Apague, bloquee y etiquete', '#C62828', 13));
 S.cl_entrar_mal = () => sv(clPlanta() + clCamion(30, 172, .78, { heap: true }) + `<g>${clMan(80, 82, { pose: 'stand', s: .7 })}</g>` + clForbid(100, 64, 22) + clLbl(160, 28, 'No se sube a la carga', '#C62828', 13));
 S.cl_biomasa_intro = () => sv(clForest() + clCamion(40, 172, .78, { heap: true }) + clCargador(220, 172, .5, { driver: true, load: true, lift: 18 }) + clBanner('Carga de biomasa'));
-S.cl_carga_cargador = () => sv(clForest() + clCamion(4, 172, .7, { heap: true }) + clCargador(200, 172, .66, { driver: true, load: true, lift: 34 }) + clArrow(210, 76, 150, 94, '#2E7D32', 3) + clLbl(160, 28, 'Cargador carga por el costado', '#263238', 12));
+S.cl_carga_cargador = () => sv(clForest() + clCamion(4, 172, .7, { heap: true }) + clCargador(185, 172, .52, { driver: true, load: true, lift: 34 }) + clArrow(210, 76, 150, 94, '#2E7D32', 3) + clLbl(160, 28, 'Cargador carga por el costado', '#263238', 12));
 S.cl_sobrecarga = () => sv(clRoad() + clCamion(40, 170, .78, { heap: true }) + `<rect x="30" y="52" width="240" height="3" fill="#C62828" stroke-dasharray="6 4"/>` + clLbl(160, 38, 'Altura y peso máximos', '#C62828', 12) + clFlash(285, 60, 11));
 S.cl_lona = () => sv(clRoad() + clCamion(40, 170, .78, { cover: true }) + clArrow(26, 110, 54, 126, '#2E7D32', 3) + clLbl(160, 28, 'Carga siempre cubierta', '#2E7D32', 14));
 S.cl_nolona = () => sv(clRoad() + clCamion(40, 170, .78, { heap: true }) + `<g class="an-rise" opacity=".75">${[0, 1, 2, 3, 4].map(i => `<rect x="${20 - i * 12}" y="${62 + i * 9}" width="5" height="3" rx="1" fill="#8B6A3E"/>`).join('')}</g>` + badge(290, 40, false) + clLbl(160, 28, 'Carga suelta: vuela y cae', '#C62828', 13));
@@ -8203,35 +8229,35 @@ const clSlope = () => `<path d="M0,140 L320,170 V200 H0z" fill="#8D6E63"/><path 
 const clMenos = (x, y, s = .62, o = {}) => clMan(x, y, Object.assign({ pose: 'stand', s }, o));
 
 // ---------- BATEA ----------
-S.cla_bat_intro = () => sv(clAcopio() + clBatea(36, 172, .8, { anim: true, ang: 38, load: true }) + clChips(22, 98, 8, 26) + clBanner('Camión batea', CLR));
-S.cla_bat_ok = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clBatea(30, 172, .8, { anim: true, ang: 36, load: true }) + clCone(14, 172) + clCone(262, 172) + `<path d="M6,176 H290" stroke="#FFC20E" stroke-width="2" stroke-dasharray="6 4"/>` + clMenos(296, 170, .58, { flip: true, pose: 'point' }) + badge(292, 40, true) + clLbl(160, 28, 'Terreno plano, despejado y estable', '#2E7D32', 13));
-S.cla_bat_pend = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + clSlope() + `<g transform="translate(40,146) rotate(5.4)">${clBatea(0, 0, .6, { ang: 34, load: true })}</g>` + clChips(30, 104, 7, 24) + clFlash(270, 96, 12) + clForbid(272, 130, 20) + clLbl(160, 40, 'Pendiente: la batea puede volcar', '#C62828', 13));
-S.cla_bat_linea = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clLineaG() + clBatea(70, 172, .75, { ang: 40, load: true }) + clSparks(124, 40) + clForbid(240, 100, 24) + clLbl(160, 18, 'Cables eléctricos sobre la batea', '#C62828', 12));
-S.cla_bat_gente = () => sv(clAcopio() + clBatea(78, 172, .62, { ang: 38, load: true }) + clChips(70, 118, 9, 22) + clMenos(30, 172, .5, { pose: 'stand' }) + clSparks(40, 90) + clForbid(40, 82, 20) + clLbl(160, 28, 'Nadie detrás de la batea', '#C62828', 14));
+S.cla_bat_intro = () => sv(clAcopio() + clBatea(36, 172, .8, { anim: true, ang: 30, load: true }) + clChips(22, 98, 8, 26) + clBanner('Camión batea', CLR));
+S.cla_bat_ok = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clBatea(30, 172, .8, { anim: true, ang: 30, load: true }) + clCone(14, 172) + clCone(262, 172) + `<path d="M6,176 H290" stroke="#FFC20E" stroke-width="2" stroke-dasharray="6 4"/>` + clMenos(296, 170, .58, { flip: true, pose: 'point' }) + badge(292, 40, true) + clLbl(160, 28, 'Terreno plano, despejado y estable', '#2E7D32', 13));
+S.cla_bat_pend = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + clSlope() + `<g transform="translate(40,146) rotate(5.4)">${clBatea(0, 0, .6, { ang: 26, load: true })}</g>` + clChips(30, 104, 7, 24) + clFlash(270, 96, 12) + clForbid(272, 130, 20) + clLbl(160, 40, 'Pendiente: la batea puede volcar', '#C62828', 13));
+S.cla_bat_linea = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clLineaG() + clBatea(70, 172, .75, { ang: 30, load: true }) + clSparks(124, 40) + clForbid(240, 100, 24) + clLbl(160, 18, 'Cables eléctricos sobre la batea', '#C62828', 12));
+S.cla_bat_gente = () => sv(clAcopio() + clBatea(78, 172, .62, { ang: 30, load: true }) + clChips(70, 118, 9, 22) + clMenos(30, 172, .5, { pose: 'stand' }) + clSparks(40, 90) + clForbid(40, 82, 20) + clLbl(160, 28, 'Nadie detrás de la batea', '#C62828', 14));
 S.cla_bat_pasos = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/>` + [['1', 'Terreno plano', '#2E7D32'], ['2', 'Sin gente ni cables', '#1565C0'], ['3', 'Freno puesto', '#EF6C00'], ['4', 'Levantar lento', '#C8102E']].map(([n, t, c], i) => `<g transform="translate(${20 + i * 75},84)"><circle cx="30" cy="30" r="26" fill="${c}" stroke="#fff" stroke-width="4"/><text x="30" y="40" font-size="28" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Arial">${n}</text><text x="30" y="76" font-size="11" font-weight="bold" text-anchor="middle" fill="#111" font-family="Arial">${t}</text></g>`).join('') + clBanner('Antes de levantar la batea', CLR));
-S.cla_bat_errores = () => sv(clAcopio({ sun: false }) + clLineaG(34, 46) + `<ellipse cx="86" cy="166" rx="16" ry="9" fill="#757575" stroke="#424242" stroke-width="2"/>` + clBatea(74, 172, .72, { ang: 36, load: true }) + clMenos(50, 172, .56) + clLbl(160, 18, 'Toca los 3 errores', '#C62828', 13));
+S.cla_bat_errores = () => sv(clAcopio({ sun: false }) + clLineaG(34, 46) + `<ellipse cx="86" cy="166" rx="16" ry="9" fill="#757575" stroke="#424242" stroke-width="2"/>` + clBatea(74, 172, .72, { ang: 30, load: true }) + clMenos(50, 172, .56) + clLbl(160, 18, 'Toca los 3 errores', '#C62828', 13));
 S.cla_bat_errores_spots = () => '';
 // ---------- PISO CAMINANTE (animado) ----------
 S.cl_piso_mecanismo = () => sv(`<rect width="320" height="200" fill="#EAF4FF"/><rect x="14" y="52" width="292" height="100" rx="4" fill="#B0B5BB" stroke="${CLK}" stroke-width="2"/><clipPath id="clpm"><rect x="16" y="54" width="288" height="96"/></clipPath><g clip-path="url(#clpm)"><g><animateTransform attributeName="transform" type="translate" values="0 0;-46 0;-46 0;0 0" keyTimes="0;.5;.55;1" dur="4s" repeatCount="indefinite"/>${[...Array(16)].map((_, i) => `<rect x="${12 + i * 23}" y="122" width="19" height="12" fill="${i % 3 == 0 ? '#E0E0E0' : '#9EA3A8'}" stroke="${CLK}"/>`).join('')}</g><g><animateTransform attributeName="transform" type="translate" values="0 0;-46 0;-46 0;0 0" keyTimes="0;.5;.55;1" dur="4s" repeatCount="indefinite"/>${clBiomasa(20, 122, 330, 62)}</g></g>` + `<g class="an-slide" style="--dx:-40px">${clArrow(250, 100, 210, 100, CLR, 5)}</g>` + clLbl(160, 36, 'Las tablillas empujan la carga hacia atrás', '#263238', 12) + clFlash(292, 70, 11) + `<text x="160" y="176" font-size="12" font-weight="bold" text-anchor="middle" fill="#C8102E" font-family="Arial">¡Atrapa y aplasta!</text>`);
-S.cl_piso_zona_mal = () => sv(clPlanta() + clCamion(70, 172, .95, { LT: 290, rear: true }) + clChips(12, 134, 9, 30) + clMenos(26, 168, .6) + clFlash(26, 96, 11) + badge(292, 40, false) + clLbl(160, 28, 'Detrás de la rampla: peligro', '#C62828', 13));
-S.cl_piso_zona_ok = () => sv(clPlanta() + clCamion(28, 172, .8, { LT: 290, rear: true }) + clChips(30, 138, 6, 24) + clMenos(272, 168, .6, { pose: 'point', flip: true }) + `<rect x="226" y="120" width="12" height="40" fill="#37474F" stroke="${CLK}"/><circle cx="232" cy="132" r="5" fill="${CLR}" class="an-pulse"/>` + badge(292, 40, true) + clLbl(160, 28, 'Mando a distancia, con visión', '#2E7D32', 13));
+S.cl_piso_zona_mal = () => sv(clPlanta() + clCamion(70, 172, .95, { LT: 430, rear: true }) + clChips(12, 134, 9, 30) + clMenos(26, 168, .6) + clFlash(26, 96, 11) + badge(292, 40, false) + clLbl(160, 28, 'Detrás de la rampla: peligro', '#C62828', 13));
+S.cl_piso_zona_ok = () => sv(clPlanta() + clCamion(28, 172, .8, { LT: 430, rear: true }) + clChips(30, 138, 6, 24) + clMenos(272, 168, .6, { pose: 'point', flip: true }) + `<rect x="226" y="120" width="12" height="40" fill="#37474F" stroke="${CLK}"/><circle cx="232" cy="132" r="5" fill="${CLR}" class="an-pulse"/>` + badge(292, 40, true) + clLbl(160, 28, 'Mando a distancia, con visión', '#2E7D32', 13));
 // ---------- CARGADOR EN EL ACOPIO ----------
 const clCargAnim = (x, y, s, o = {}) => `<g>${o.move ? `<animateTransform attributeName="transform" type="translate" values="0 0;${o.move} 0;0 0" dur="${o.dur || 6}s" repeatCount="indefinite"/>` : ''}${clCargador(x, y, s, o)}</g>`;
 S.cla_carg_intro = () => sv(clAcopio() + clCargAnim(64, 172, .85, { driver: true, load: true, lift: 8, move: 46, dur: 5 }) + clChips(212, 100, 6, 18) + clBanner('Cargador frontal en el acopio', CLR));
 S.cla_carg_zona_ok = () => sv(clAcopio() + clCargador(44, 172, .8, { driver: true, load: true, lift: 8 }) + `<circle cx="104" cy="160" r="86" fill="#E53935" opacity=".12" stroke="#E53935" stroke-width="3" stroke-dasharray="8 6"/>` + clMenos(274, 170, .6, { pose: 'point', flip: true }) + `<g class="an-pulse"><circle cx="76" cy="92" r="9" fill="#FFC20E" stroke="#111" stroke-width="2"/></g>` + badge(292, 40, true) + clLbl(160, 28, 'Fuera del radio de giro', '#2E7D32', 14));
-S.cla_carg_zona_mal = () => sv(clAcopio() + clCargador(160, 172, .8, { driver: true, load: true, lift: 8 }) + `<circle cx="104" cy="160" r="86" fill="#E53935" opacity=".16" stroke="#E53935" stroke-width="3" stroke-dasharray="8 6"/>` + clMenos(120, 170, .6, { pose: 'stand' }) + clFlash(120, 96, 11) + `<g class="an-flash"><circle cx="196" cy="94" r="9" fill="#FFC20E" stroke="#111" stroke-width="2"/></g>` + badge(292, 40, false) + clLbl(160, 28, 'Detrás del cargador: punto ciego', '#C62828', 14));
+S.cla_carg_zona_mal = () => sv(clAcopio() + clCargador(150, 172, .62, { driver: true, load: true, lift: 8 }) + `<circle cx="104" cy="160" r="86" fill="#E53935" opacity=".16" stroke="#E53935" stroke-width="3" stroke-dasharray="8 6"/>` + clMenos(120, 170, .6, { pose: 'stand' }) + clFlash(120, 96, 11) + `<g class="an-flash"><circle cx="196" cy="94" r="9" fill="#FFC20E" stroke="#111" stroke-width="2"/></g>` + badge(292, 40, false) + clLbl(160, 28, 'Detrás del cargador: punto ciego', '#C62828', 14));
 S.cla_carg_alto_mal = () => sv(clAcopio() + `<g><animateTransform attributeName="transform" type="rotate" values="0 100 172;-6 100 172;0 100 172;4 100 172;0 100 172" dur="1.4s" repeatCount="indefinite"/>${clCargador(50, 172, .9, { driver: true, load: true, lift: 54 })}</g>` + clForbid(232, 78, 22) + badge(292, 40, false) + clLbl(160, 28, 'Balde alto al desplazarse: vuelca', '#C62828', 13));
 S.cla_carg_bajo_ok = () => sv(clAcopio() + clCargAnim(30, 172, .9, { driver: true, load: true, lift: -4, move: 40, dur: 5 }) + clArrow(210, 150, 250, 150, '#2E7D32', 3) + badge(292, 40, true) + clLbl(160, 28, 'Balde bajo y mirando hacia donde va', '#2E7D32', 13));
 S.cla_carg_errores = () => sv(clAcopio({ sun: false }) + `<circle cx="116" cy="160" r="86" fill="#E53935" opacity=".12" stroke="#E53935" stroke-width="3" stroke-dasharray="8 6"/>` + clCargador(76, 172, .8, { driver: true, load: true, lift: 48 }) + clMenos(52, 170, .58) + clMenos(250, 124, .45, { pose: 'stand' }) + clLbl(160, 18, 'Toca los 3 errores', '#C62828', 13));
 // ---------- INSPECCIÓN DEL CAMIÓN ----------
 S.cla_insp = () => sv(clRoad({ sun: false }) + clCamion(26, 172, .8, { driver: false }) + `<ellipse cx="60" cy="163" rx="14" ry="9" fill="#2B2D2F" stroke="#000" stroke-width="1.4"/>` + `<rect x="186" y="124" width="9" height="9" rx="2" fill="#555" stroke="#000"/><path d="M182,172 q2,8 0,14" stroke="#111" stroke-width="3" fill="none"><animate attributeName="stroke-opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></path><ellipse cx="182" cy="188" rx="9" ry="3" fill="#111" opacity=".7"/>` + `<rect x="34" y="143" width="5" height="9" fill="#555"/><rect x="150" y="91" width="5" height="14" fill="#111" transform="rotate(25 152 98)"/>` + clLbl(160, 22, 'Revisión antes de salir: toca 4 problemas', '#263238', 12));
 // ---------- INDUCCIÓN: faena ----------
-S.cla_ind_faena = () => sv(clPlanta() + clChips(8, 160, 6, 22) + clMan(52, 176, { pose: 'stand', s: .9 }) + `<rect x="68" y="112" width="16" height="26" rx="3" fill="#263238" stroke="#000"/><rect x="71" y="116" width="10" height="15" fill="#80D8FF"/>` + W(146, 176, { pose: 'stand', s: .9, vest: false, helmet: false, shirt: '#455A64' }) + clCargador(190, 176, .62, { driver: true, load: true, lift: 18 }) + clLbl(160, 30, 'Toca los 3 riesgos de la faena', '#C62828', 13));
+S.cla_ind_faena = () => sv(clAcopio() + clMan(34, 176, { pose: 'stand', s: .62 }) + `<rect x="46" y="126" width="11" height="18" rx="2" fill="#263238" stroke="#000"/><rect x="48" y="128" width="7" height="10" fill="#80D8FF"/>` + W(88, 176, { pose: 'stand', s: .62, vest: false, helmet: false, shirt: '#455A64' }) + clCargador(120, 176, .9, { driver: true, load: true, lift: 18 }) + clLbl(160, 28, 'Toca los 3 riesgos de la faena', '#C62828', 13));
 const CLA_SPOTS = {
   cla_bat_errores: [{ x: 50, y: 142, r: 26, l: 'Persona detrás de la batea' }, { x: 118, y: 40, r: 26, l: 'Cables sobre la batea' }, { x: 86, y: 166, r: 22, l: 'Piedra bajo la rueda: terreno inestable' }],
   cla_carg_errores: [{ x: 52, y: 140, r: 24, l: 'Persona en el punto ciego' }, { x: 205, y: 100, r: 22, l: 'Balde levantado al desplazarse' }, { x: 252, y: 98, r: 18, l: 'Persona subida al acopio' }],
   cla_insp: [{ x: 60, y: 162, r: 24, l: 'Neumático desinflado' }, { x: 182, y: 180, r: 22, l: 'Fuga de aceite' }, { x: 28, y: 138, r: 20, l: 'Luz trasera rota' }, { x: 153, y: 98, r: 20, l: 'Espejo suelto' }],
-  cla_ind_faena: [{ x: 146, y: 130, r: 26, l: 'Persona sin casco ni chaleco' }, { x: 74, y: 124, r: 22, l: 'Uso del celular en la faena' }, { x: 245, y: 150, r: 30, l: 'Cargador en movimiento con gente cerca' }]
+  cla_ind_faena: [{ x: 88, y: 138, r: 24, l: 'Persona sin casco ni chaleco' }, { x: 50, y: 134, r: 20, l: 'Uso del celular en la faena' }, { x: 205, y: 130, r: 38, l: 'Cargador en movimiento con gente cerca' }]
 };
 
 // ====== MOTOR: nuevos tipos de pregunta ======
@@ -8436,9 +8462,9 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       },
       fail: (s, a) => {
         let g = '';
-        if (s.cables === 'b' && a > 20) g += clSparks(130, 50);
-        if (s.gente === 'b' && a > 20) g += clFlash(30, 120, 12);
-        if (s.terreno === 'b' && a > 20) g += clForbid(272, 120, 20);
+        if (s.cables === 'b' && a > 18) g += clSparks(130, 50);
+        if (s.gente === 'b' && a > 18) g += clFlash(30, 120, 12);
+        if (s.terreno === 'b' && a > 18) g += clForbid(272, 120, 20);
         return g;
       }
     },
@@ -8459,8 +8485,8 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       },
       fail: (s, a) => {
         let g = '';
-        if (s.gente === 'b' && a > 20) g += clFlash(60, 120, 12);
-        if (s.balde === 'b' && a > 20) g += clForbid(270, 80, 20);
+        if (s.gente === 'b' && a > 18) g += clFlash(60, 120, 12);
+        if (s.balde === 'b' && a > 18) g += clForbid(270, 80, 20);
         return g;
       }
     }
@@ -8482,8 +8508,8 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       if (done || busy) return; busy = true; tries++;
       const bad = C.fac.filter(f => state[f.k] === 'b'); let a = 0; const t0 = performance.now();
       const step = ts => {
-        a = Math.min(36, (ts - t0) / 25); draw(q.build === 'cargador' ? Math.min(36, (ts - t0) / 25) : a);
-        if (a < 36) return requestAnimationFrame(step);
+        a = Math.min(30, (ts - t0) / 25); draw(q.build === 'cargador' ? Math.min(30, (ts - t0) / 25) : a);
+        if (a < 30) return requestAnimationFrame(step);
         if (!bad.length) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> Maniobra segura: terreno, entorno y personas controlados.'; try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
         $('bldH').innerHTML = '✖ <b>Maniobra insegura.</b> ' + bad.map(f => f.m).join(' ');
         try { SFX.play('bad'); } catch (e) {}
