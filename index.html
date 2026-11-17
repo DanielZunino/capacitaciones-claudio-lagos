@@ -7539,7 +7539,7 @@ const CLK = '#111111', CLR = '#C8102E', CLG = '#8D9096', CLW = '#FFFFFF';
 let CLU = 0; const clid = p => 'cl' + p + (CLU++);
 const f1c = v => (+v).toFixed(1);
 const clLbl = (x, y, s, c = '#263238', size = 12) => { const w = s.length * size * .6 + 12; return `<rect x="${f1c(x - w / 2)}" y="${y - size - 2}" width="${f1c(w)}" height="${size + 7}" rx="4" fill="#fff" opacity=".95"/>` + txt(x, y + 1, s, size, c); };
-const clBanner = (s, c = CLR, y = 8) => { const ww = Math.max(90, s.length * 7.6 + 24); return `<rect x="${f1c(160 - ww / 2)}" y="${y}" width="${f1c(ww)}" height="24" rx="12" fill="${c}" stroke="#fff" stroke-width="2"/>` + txt(160, y + 17, s, 13, '#fff'); };
+const clBanner = (s, c = CLR, y = 30) => { const ww = Math.max(90, s.length * 7.6 + 24); return `<rect x="${f1c(160 - ww / 2)}" y="${y}" width="${f1c(ww)}" height="24" rx="12" fill="${c}" stroke="#fff" stroke-width="2"/>` + txt(160, y + 17, s, 13, '#fff'); };
 const clFlash = (x, y, r = 9) => `<g class="an-flash"><circle cx="${x}" cy="${y}" r="${r}" fill="${CLR}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${f1c(y + r * .45)}" font-size="${f1c(r * 1.3)}" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Arial">!</text></g>`;
 const clForbid = (x, y, r = 16) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${CLR}" stroke-width="${r * .22}"/><line x1="${f1c(x - r * .7)}" y1="${f1c(y - r * .7)}" x2="${f1c(x + r * .7)}" y2="${f1c(y + r * .7)}" stroke="${CLR}" stroke-width="${r * .22}"/>`;
 const clArrow = (x1, y1, x2, y2, c = '#2E7D32', w = 4) => { const a = Math.atan2(y2 - y1, x2 - x1), h = 9; return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/><path d="M${x2},${y2} l${f1c(-h * Math.cos(a - .5))},${f1c(-h * Math.sin(a - .5))} M${x2},${y2} l${f1c(-h * Math.cos(a + .5))},${f1c(-h * Math.sin(a + .5))}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`; };
@@ -7655,7 +7655,7 @@ function RAMPLA(L, o) {
   o = o || {}; L = L || 150; const s = .78, n = f1c;
   let g = `<ellipse cx="${n((L + 66) / 2)}" cy="1" rx="${n((L + 66) / 2 + 4)}" ry="4" fill="#000" opacity=".22"/>`;
   g += clTrailerG(L, Object.assign({}, o, { open: !!o.open }));
-  const tx = L - 10 - 154 * s;
+  const tx = L - 22 - 154 * s;
   g += `<g transform="translate(${n(tx)},0) scale(${s},${s})">${clTractorG({ driver: o.driver })}</g>`;
   g += clWheelG(L - 14, 12);
   if (o.brake) g += `<g class="an-flash"><circle cx="-1" cy="-40" r="9" fill="#FF1744" opacity=".5"/></g>`;
@@ -7671,7 +7671,7 @@ function RAMPLA_ABS(x, y, D, W, o) {
 function clCamion(x, y, s, o) {
   o = o || {}; s = s || 1;
   let g = `<ellipse cx="126" cy="1" rx="132" ry="4" fill="#000" opacity=".22"/>`;
-  g += clTrailerG(150, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
+  g += clTrailerG(172, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
   if (o.rear) g += `<rect x="-6" y="-100" width="7" height="62" fill="#5E6166" stroke="${CLK}"/><g>${clBiomasa(-52, 0, 54, 24)}</g>`;
   g += clTractorG({ driver: o.driver });
   if (o.brake) g += `<g class="an-flash"><circle cx="-1" cy="-40" r="9" fill="#FF1744" opacity=".5"/></g>`;
@@ -8204,7 +8204,7 @@ const clMenos = (x, y, s = .62, o = {}) => clMan(x, y, Object.assign({ pose: 'st
 // ---------- BATEA ----------
 S.cla_bat_intro = () => sv(clAcopio() + clBatea(36, 172, .8, { anim: true, ang: 38, load: true }) + clChips(22, 98, 8, 26) + clBanner('Camión batea', CLR));
 S.cla_bat_ok = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clBatea(30, 172, .8, { anim: true, ang: 36, load: true }) + clCone(14, 172) + clCone(262, 172) + `<path d="M6,176 H290" stroke="#FFC20E" stroke-width="2" stroke-dasharray="6 4"/>` + clMenos(296, 170, .58, { flip: true, pose: 'point' }) + badge(292, 40, true) + clLbl(160, 28, 'Terreno plano, despejado y estable', '#2E7D32', 13));
-S.cla_bat_pend = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + clSlope() + `<g transform="translate(10,150) rotate(-8)">${clBatea(0, 24, .78, { ang: 34, load: true })}<animateTransform attributeName="transform" type="rotate" values="-8 130 170;-8 130 170;-24 200 190;-24 200 190;-8 130 170" keyTimes="0;.3;.55;.8;1" dur="5s" repeatCount="indefinite" additive="sum"/></g>` + clFlash(262, 78, 12) + clForbid(268, 112, 22) + clLbl(160, 28, 'Pendiente: la batea puede volcar', '#C62828', 13));
+S.cla_bat_pend = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + clSlope() + `<g transform="translate(30,143) rotate(5.4)">${clBatea(0, 0, .7, { ang: 34, load: true })}</g>` + clChips(30, 104, 7, 24) + clFlash(270, 96, 12) + clForbid(272, 130, 20) + clLbl(160, 40, 'Pendiente: la batea puede volcar', '#C62828', 13));
 S.cla_bat_linea = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/><rect y="150" width="320" height="3" fill="#6E777F"/>` + clLineaG() + clBatea(70, 172, .75, { ang: 40, load: true }) + clSparks(124, 40) + clForbid(240, 100, 24) + clLbl(160, 18, 'Cables eléctricos sobre la batea', '#C62828', 12));
 S.cla_bat_gente = () => sv(clAcopio() + clBatea(60, 172, .75, { ang: 38, load: true }) + clChips(52, 104, 9, 22) + clMenos(40, 172, .6, { pose: 'stand' }) + clSparks(40, 90) + clForbid(40, 82, 20) + clLbl(160, 28, 'Nadie detrás de la batea', '#C62828', 14));
 S.cla_bat_pasos = () => sv(clSky({ top: '#2F80ED', bot: '#D6ECFF' }) + `<rect y="150" width="320" height="50" fill="#8A939B"/>` + [['1', 'Terreno plano', '#2E7D32'], ['2', 'Sin gente ni cables', '#1565C0'], ['3', 'Freno puesto', '#EF6C00'], ['4', 'Levantar lento', '#C8102E']].map(([n, t, c], i) => `<g transform="translate(${20 + i * 75},84)"><circle cx="30" cy="30" r="26" fill="${c}" stroke="#fff" stroke-width="4"/><text x="30" y="40" font-size="28" font-weight="bold" text-anchor="middle" fill="#fff" font-family="Arial">${n}</text><text x="30" y="76" font-size="11" font-weight="bold" text-anchor="middle" fill="#111" font-family="Arial">${t}</text></g>`).join('') + clBanner('Antes de levantar la batea', CLR));
@@ -8225,12 +8225,12 @@ S.cla_carg_errores = () => sv(clAcopio({ sun: false }) + `<circle cx="116" cy="1
 // ---------- INSPECCIÓN DEL CAMIÓN ----------
 S.cla_insp = () => sv(clRoad({ sun: false }) + clCamion(26, 172, .8, { driver: false }) + `<ellipse cx="60" cy="163" rx="14" ry="9" fill="#2B2D2F" stroke="#000" stroke-width="1.4"/>` + `<rect x="186" y="124" width="9" height="9" rx="2" fill="#555" stroke="#000"/><path d="M182,172 q2,8 0,14" stroke="#111" stroke-width="3" fill="none"><animate attributeName="stroke-opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></path><ellipse cx="182" cy="188" rx="9" ry="3" fill="#111" opacity=".7"/>` + `<rect x="34" y="143" width="5" height="9" fill="#555"/><rect x="150" y="91" width="5" height="14" fill="#111" transform="rotate(25 152 98)"/>` + clLbl(160, 22, 'Revisión antes de salir: toca 4 problemas', '#263238', 12));
 // ---------- INDUCCIÓN: faena ----------
-S.cla_ind_faena = () => sv(clPlanta() + clCamion(24, 172, .62, { rear: true }) + clCargador(188, 172, .5, { driver: true, load: true, lift: 18 }) + W(150, 170, { pose: 'stand', s: .55, vest: false, helmet: false, shirt: '#455A64' }) + clMan(252, 170, { pose: 'stand', s: .55 }) + `<rect x="272" y="126" width="12" height="18" rx="2" fill="#263238"/><rect x="274" y="129" width="8" height="10" fill="#80D8FF"/>` + `<g transform="translate(96,96)"><rect x="0" y="0" width="30" height="16" rx="3" fill="#CFD8DC" stroke="#111"/></g>` + clLbl(160, 18, 'Toca los 3 riesgos de la faena', '#C62828', 13));
+S.cla_ind_faena = () => sv(clPlanta() + clCamion(6, 172, .55, { rear: true }) + clCargador(200, 172, .45, { driver: true, load: true, lift: 18 }) + W(166, 170, { pose: 'stand', s: .55, vest: false, helmet: false, shirt: '#455A64' }) + clMan(292, 170, { pose: 'stand', s: .55 }) + `<rect x="302" y="128" width="11" height="17" rx="2" fill="#263238"/><rect x="304" y="131" width="7" height="9" fill="#80D8FF"/>` + clLbl(160, 40, 'Toca los 3 riesgos de la faena', '#C62828', 13));
 const CLA_SPOTS = {
   cla_bat_errores: [{ x: 50, y: 142, r: 26, l: 'Persona detrás de la batea' }, { x: 118, y: 40, r: 26, l: 'Cables sobre la batea' }, { x: 86, y: 166, r: 22, l: 'Piedra bajo la rueda: terreno inestable' }],
   cla_carg_errores: [{ x: 52, y: 140, r: 24, l: 'Persona en el punto ciego' }, { x: 205, y: 100, r: 22, l: 'Balde levantado al desplazarse' }, { x: 252, y: 98, r: 18, l: 'Persona subida al acopio' }],
   cla_insp: [{ x: 60, y: 162, r: 24, l: 'Neumático desinflado' }, { x: 182, y: 180, r: 22, l: 'Fuga de aceite' }, { x: 28, y: 138, r: 20, l: 'Luz trasera rota' }, { x: 153, y: 98, r: 20, l: 'Espejo suelto' }],
-  cla_ind_faena: [{ x: 148, y: 140, r: 24, l: 'Persona sin casco ni chaleco' }, { x: 272, y: 118, r: 22, l: 'Uso del celular en la faena' }, { x: 215, y: 150, r: 26, l: 'Cargador en movimiento con gente cerca' }]
+  cla_ind_faena: [{ x: 166, y: 142, r: 24, l: 'Persona sin casco ni chaleco' }, { x: 298, y: 128, r: 20, l: 'Uso del celular en la faena' }, { x: 232, y: 148, r: 24, l: 'Cargador en movimiento con gente cerca' }]
 };
 
 // ====== MOTOR: nuevos tipos de pregunta ======
