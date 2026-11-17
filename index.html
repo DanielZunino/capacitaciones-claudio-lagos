@@ -7669,7 +7669,7 @@ function RAMPLA_ABS(x, y, D, W, o) {
 }
 // ---- Camión del logo completo (rampla cerrada + tracto). (0,0)=suelo bajo la parte trasera. Largo ≈ 252
 function clCamion(x, y, s, o) {
-  o = o || {}; s = o.exact ? (s || 1) : (o.LT ? .56 : .72); const LT = o.LT || 215; window.__trk = Math.max(window.__trk || 0, 59 * s);
+  o = o || {}; s = o.exact ? (s || 1) : (o.LT ? .56 : .72); const LT = o.LT || 215; window.__trk = Math.min(window.__trk || 999, 59 * s);
   let g = `<ellipse cx="${LT / 2 + 63}" cy="1" rx="${LT / 2 + 70}" ry="4" fill="#000" opacity=".22"/>`;
   g += clTrailerG(LT, { heap: o.heap, cover: o.cover, brake: o.brake, load: o.load });
   if (o.rear) g += `<rect x="-6" y="-100" width="7" height="62" fill="#5E6166" stroke="${CLK}"/><g>${clBiomasa(-52, 0, 54, 24)}</g>`;
@@ -7682,16 +7682,18 @@ function clCamion(x, y, s, o) {
 // ---- Camión BATEA (volquete): chasis rígido, cabina del logo, batea gris que gira sobre su bisagra trasera.
 // (0,0) = suelo bajo la bisagra trasera. Largo ≈ 252. o.ang = grados de levante fijo; o.anim = 'sube' (sube y baja en bucle)
 function clBatea(x, y, s, o) {
-  o = o || {}; s = s || 1; const BL = 322, DX = 190; s = s * .62; window.__trk = Math.max(window.__trk || 0, 65 * s); let g = `<ellipse cx="${126 + DX / 2}" cy="1" rx="${132 + DX / 2}" ry="4" fill="#000" opacity=".22"/>`;
+  o = o || {}; s = s || 1; const BL = 322, DX = 190; s = s * .62; window.__trk = Math.min(window.__trk || 999, 65 * s); let g = `<ellipse cx="${126 + DX / 2}" cy="1" rx="${132 + DX / 2}" ry="4" fill="#000" opacity=".22"/>`;
   g += `<rect x="0" y="-36" width="${152 + DX}" height="6" fill="#26282A"/><rect x="2" y="-32" width="${150 + DX}" height="3" fill="#3C3F42"/>`;
   const A = o.ang || 0;
   const box = `<path d="M0,-40 H${BL} V-140 H8 q-8,0 -8,8z" fill="#FAFAFB" stroke="${CLK}" stroke-width="1.8"/>`
     + `<text x="${BL / 2}" y="-84" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-style="italic" font-size="42" letter-spacing="2" fill="#1B2A5C" stroke="#fff" stroke-width=".6">RANDON</text>`
     + `<rect x="0" y="-144" width="${BL}" height="5" fill="#FFFFFF" stroke="${CLK}" stroke-width="1.2"/><rect x="0" y="-62" width="${BL}" height="5" fill="${CLR}"/>`
-    + (o.load ? `<g>${clBiomasa(8, -136, BL - 16, 26)}</g>` : '');
+    + (o.load ? (o.anim ? `<g transform="translate(0,-136)"><g><animateTransform attributeName="transform" type="scale" values="1 1;1 .12;1 .12;1 1;1 1" keyTimes="0;.35;.6;.95;1" dur="5s" repeatCount="indefinite"/>${clBiomasa(8, 0, BL - 16, 26)}</g></g>` : `<g transform="translate(0,-136)"><g transform="scale(1 ${A > 6 ? Math.max(.12, 1 - A / 30 * .88).toFixed(2) : 1})">${clBiomasa(8, 0, BL - 16, 26)}</g></g>`) : '');
+  const pile = !o.load ? '' : (o.anim ? `<g><animateTransform attributeName="transform" type="scale" values="1 .02;1 1;1 1;1 .02;1 .02" keyTimes="0;.35;.6;.95;1" dur="5s" repeatCount="indefinite"/>${clBiomasa(-84, 0, 92, 40)}</g>` : (A > 6 ? `<g transform="scale(1 ${Math.min(1, A / 30).toFixed(2)})">${clBiomasa(-84, 0, 92, 40)}</g>` : ''));
   let rot;
   if (o.anim) rot = `<animateTransform attributeName="transform" type="rotate" values="0 4 -40;${-(A || 38)} 4 -40;${-(A || 38)} 4 -40;0 4 -40;0 4 -40" keyTimes="0;.35;.6;.95;1" dur="5s" repeatCount="indefinite"/>`;
   else rot = '';
+  g += pile;
   g += `<g transform="rotate(${-A} 4 -40)">${box}${rot}</g>`;
   g += `<g stroke="#2B2D2F" stroke-width="5" stroke-linecap="round"><line x1="${110 + DX}" y1="-33" x2="${o.anim ? 118 + DX : 110 + DX + Math.sin(A * Math.PI / 180) * 30}" y2="${-38 - (o.anim ? 14 : Math.sin(A * Math.PI / 180) * 38)}"/></g>`;
   g += clWheelG(22) + clWheelG(46);
@@ -7702,7 +7704,7 @@ function clBatea(x, y, s, o) {
 
 // ---- Cargador frontal amarillo (nuevo): ruedas grandes, cabina con vidrio, brazos, cilindro y balde
 function clCargador(x, y, s, o) {
-  o = o || {}; s = (s || 1) * .8; window.__trk = Math.max(window.__trk || 0, 72 * s); const lift = o.lift || 0, Y = '#FFC20E', Yd = '#D99A00', K = '#111';
+  o = o || {}; s = (s || 1) * .8; window.__trk = Math.min(window.__trk || 999, 60 * s); const lift = o.lift || 0, Y = '#FFC20E', Yd = '#D99A00', K = '#111';
   const w = cx => `<g transform="translate(${cx},-25)"><circle r="25" fill="#1F2123" stroke="#000" stroke-width="2"/><circle r="19" fill="none" stroke="#3E4247" stroke-width="3" stroke-dasharray="5 4"/><circle r="11" fill="#B0B5BA" stroke="#000" stroke-width="1.5"/><circle r="4" fill="#444"/></g>`;
   const ex = 214, ey = -42 - lift * 1.1;
   let g = `<ellipse cx="125" cy="1" rx="136" ry="4.5" fill="#000" opacity=".22"/>`;
@@ -7775,10 +7777,10 @@ S.cl_cargador_camion = () => sv(clForest() + clCamion(0, 172, .66, { heap: true 
 S.cl_cargador_cinturon = () => sv(clForest() + clCargador(60, 172, 1.05, { driver: true }) + clLbl(100, 68, 'Cinturón puesto', '#2E7D32', 13) + `<path d="M104,86 L88,102" stroke="#FFC20E" stroke-width="3"/>`);
 
 // ---------- Escenas: TALLER ----------
-const clGataBase = () => clTaller() + clCamion(20, 136, .8, { LT: 120, exact: true });
-const clLying = (x, y) => `<g transform="translate(${x},${y}) rotate(90) scale(1.3)">${W(0, 0, { pose: 'stand', shirt: '#37474F' })}</g>`;
-S.cl_gata_mal = () => sv(clGataBase() + `<rect x="176" y="128" width="34" height="18" fill="#C8102E" stroke="#000"/><rect x="189" y="104" width="8" height="24" fill="#37474F"/>` + clLying(100, 142) + badge(290, 40, false) + clLbl(160, 28, 'Solo con gata: NUNCA', '#C62828', 14));
-S.cl_gata_ok = () => sv(clGataBase() + [44, 160].map((x => `<rect x="${x - 13}" y="141" width="26" height="6" fill="#FFC20E" stroke="#000"/><rect x="${x - 3}" y="108" width="6" height="33" fill="#FFC20E" stroke="#000"/><rect x="${x - 10}" y="104" width="20" height="5" fill="#FFC20E" stroke="#000"/>`)).join('') + `<path d="M250,147 l18,0 l0,-11z" fill="#FFC20E" stroke="#000"/>` + clLying(100, 142) + badge(290, 40, true) + clLbl(160, 28, 'Caballetes + calzos', '#2E7D32', 14));
+const clGataBase = () => clTaller() + clCamion(14, 136, .8, { LT: 200, exact: true });
+const clLying = (x, y) => `<rect x="${x - 34}" y="${y + 6}" width="68" height="5" rx="2" fill="#8D6E63" stroke="#000"/><circle cx="${x - 26}" cy="${y + 13}" r="3" fill="#222"/><circle cx="${x + 26}" cy="${y + 13}" r="3" fill="#222"/><g transform="translate(${x},${y}) rotate(90) scale(1.1)">${W(0, 0, { pose: 'stand', shirt: '#37474F' })}</g><path d="M${x + 12},${y - 2} L${x + 20},${y - 20}" stroke="#37474F" stroke-width="5" stroke-linecap="round"/><circle cx="${x + 20}" cy="${y - 21}" r="3.2" fill="#F2C6A0" stroke="#000" stroke-width=".6"/><rect x="${x + 17}" y="${y - 34}" width="5" height="13" rx="1.5" fill="#B0BEC5" stroke="#000" stroke-width=".8"/>`;
+S.cl_gata_mal = () => sv(clGataBase() + `<rect x="186" y="128" width="34" height="18" fill="#C8102E" stroke="#000"/><rect x="199" y="104" width="8" height="24" fill="#37474F"/>` + clLying(131, 142) + badge(290, 40, false) + clLbl(160, 28, 'Solo con gata: NUNCA', '#C62828', 14));
+S.cl_gata_ok = () => sv(clGataBase() + [92, 170].map((x => `<rect x="${x - 13}" y="141" width="26" height="6" fill="#FFC20E" stroke="#000"/><rect x="${x - 3}" y="108" width="6" height="33" fill="#FFC20E" stroke="#000"/><rect x="${x - 10}" y="104" width="20" height="5" fill="#FFC20E" stroke="#000"/>`)).join('') + `<path d="M262,147 l18,0 l0,-11z" fill="#FFC20E" stroke="#000"/>` + clLying(131, 142) + badge(290, 40, true) + clLbl(160, 28, 'Caballetes + calzos', '#2E7D32', 14));
 S.cl_caballete = () => sv(clTaller() + `<path d="M120,150 l20,-50 l20,50" fill="none" stroke="#FFC20E" stroke-width="7" stroke-linejoin="round"/><rect x="128" y="124" width="24" height="4" fill="#FFC20E"/>` + clLbl(140, 90, 'Caballete', '#263238', 13) + `<rect x="196" y="132" width="40" height="18" rx="4" fill="#C8102E" stroke="#000" stroke-width="2"/><rect x="214" y="124" width="4" height="10" fill="#000"/>` + clLbl(216, 120, 'Gata', '#263238', 13) + clArrow(176, 142, 196, 142, '#C62828', 3) + clLbl(160, 28, 'La gata levanta; el caballete sostiene', '#263238', 12));
 S.cl_neumatico = () => sv(clTaller() + `<circle cx="120" cy="116" r="52" fill="#2B2D2F" stroke="#000" stroke-width="3"/><circle cx="120" cy="116" r="30" fill="#9EA3A8" stroke="#000" stroke-width="2"/>` + [0, 1, 2, 3, 4, 5, 6, 7].map(i => `<circle cx="${120 + 18 * Math.cos(i * Math.PI / 4)}" cy="${116 + 18 * Math.sin(i * Math.PI / 4)}" r="3.3" fill="#444"/>`).join('') + `<circle cx="120" cy="116" r="7" fill="#444"/>` + clLbl(220, 70, 'Presión y pernos', '#263238', 13) + clLbl(220, 100, 'Torquímetro', '#263238', 13) + clFlash(190, 80, 10));
 S.cl_inflar_mal = () => sv(clTaller() + `<circle cx="170" cy="120" r="40" fill="#2B2D2F" stroke="#000" stroke-width="3"/><circle cx="170" cy="120" r="22" fill="#9EA3A8"/>` + clMan(70, 168, { pose: 'bend', s: .9 }) + `<path d="M104,138 Q130,150 150,126" stroke="#37474F" stroke-width="3" fill="none"/>` + badge(290, 40, false) + clLbl(160, 28, 'Frente al neumático: NO', '#C62828', 14));
@@ -7993,7 +7995,7 @@ nuevoTema({ id: 'cl_hogar', title: 'Asesora del hogar: aseo seguro en la casa', 
   ] }, { obj: 'Realizar el aseo y las tareas del hogar de forma segura: productos químicos, caídas, cargas y electricidad.', n: ['Ley 16.744: protección frente a accidentes del trabajo y enfermedades profesionales.', 'Ley 20.949: peso máximo de carga manual.', 'Código del Trabajo, art. 146-A y siguientes: trabajadores de casa particular.', 'DS 44: deber de informar los riesgos y sus medidas preventivas.'] });
 
 // ===== Claudio Lagos: inducción, limpieza de charlas heredadas y secciones =====
-S.cl_ind_bienvenida = () => sv(clRoad() + clCamion(4, 146, .42, { driver: true }) + clBatea(150, 182, .5, { load: true }) + clBanner('Transportes Claudio Lagos'));
+S.cl_ind_bienvenida = () => sv(clRoad() + clCamion(6, 176, .45, { driver: true, exact: true }) + clBatea(158, 182, .56, { load: true }) + clBanner('Transportes Claudio Lagos'));
 S.cl_ind_riesgos = () => sv(clPlanta() + clBatea(2, 172, .5, { load: true }) + clCargador(205, 172, .5, { driver: true, load: true, lift: 10 }) + clMan(172, 170, { pose: "stand", s: .7 }) + clBanner('Los riesgos de tu puesto'));
 S.cl_ind_caidas = () => S.cl_escala();
 
@@ -8061,11 +8063,11 @@ S.cl_ind_caidas = () => S.cl_escala();
       { s: S.pz_compromiso ? 'pz_compromiso' : 'cl_ind_riesgos', t: 'Tu compromiso: autocuidado', x: 'La mayoría de los accidentes se relacionan con una <b>acción insegura</b>: apurarse, saltarse un paso o no usar el EPP. Cuidarte es tu responsabilidad, y avisar lo inseguro también. Lee y respeta el <b>Reglamento Interno de Orden, Higiene y Seguridad</b> de tu empresa.', k: 'Tu seguridad depende de lo que haces cada día.' }
     ],
     quiz: [
-      Q('Te cortas un dedo con un trozo de metal y parece leve. ¿Qué haces?', 'cl_ind_bienvenida', ['Aviso de inmediato a mi jefatura', 'Sigo y aviso al final del día', 'No digo nada si no sangra mucho'], 0, 'Todo accidente se informa de inmediato para recibir atención y cobertura.'),
-      V('El accidente de trayecto, entre tu casa y el trabajo, está cubierto por la Ley 16.744.', 'cl_ind_bienvenida', true, 'Verdadero. El trayecto directo de ida o regreso es accidente laboral.'),
-      Q('¿Qué número llamas para pedir una ambulancia?', 'cl_ind_bienvenida', ['131', '132', '133'], 0, '131 Ambulancia, 132 Bomberos, 133 Carabineros.'),
+      Q('Te cortas un dedo con un trozo de metal y parece leve. ¿Qué haces?', 'accidente_avisa', ['Aviso de inmediato a mi jefatura', 'Sigo y aviso al final del día', 'No digo nada si no sangra mucho'], 0, 'Todo accidente se informa de inmediato para recibir atención y cobertura.'),
+      V('El accidente de trayecto, entre tu casa y el trabajo, está cubierto por la Ley 16.744.', 'pz_trayecto', true, 'Verdadero. El trayecto directo de ida o regreso es accidente laboral.'),
+      Q('¿Qué número llamas para pedir una ambulancia?', 'emergencias_llamar', ['131', '132', '133'], 0, '131 Ambulancia, 132 Bomberos, 133 Carabineros.'),
       Q('¿Quién paga tus elementos de protección personal?', S.pz_epp_ok ? 'pz_epp_ok' : 'cl_planta_epp', ['La empresa, sin costo para ti', 'Tú, con descuento', 'Mitad y mitad'], 0, 'La empresa entrega los EPP sin costo y con registro.'),
-      Q('Antes de salir con el camión revisas:', 'cl_distancia', ['Frenos, luces, neumáticos, quinta rueda y fugas', 'Solo el combustible', 'Nada, si ayer funcionaba'], 0, 'La revisión antes de salir evita fallas en ruta con carga.'),
+      Q('Antes de salir con el camión revisas:', 'cla_insp', ['Frenos, luces, neumáticos, quinta rueda y fugas', 'Solo el combustible', 'Nada, si ayer funcionaba'], 0, 'La revisión antes de salir evita fallas en ruta con carga.'),
       V('Está permitido contestar el celular en la mano si es una llamada corta.', 'cl_celular_mal', false, 'Falso. El celular en la mano está prohibido al conducir.'),
       Q('Vas a descargar con el piso caminante. ¿Dónde debe estar la gente?', 'cl_piso_zona_ok', ['Lejos de la rampla, nadie detrás', 'Detrás, mirando', 'Sobre la carga'], 0, 'Nadie detrás de la rampla ni dentro de la zona de caída de la carga.'),
       Q('Para limpiar o reparar el piso caminante, primero:', 'cl_piso_bloqueo', ['Apago, bloqueo y etiqueto', 'Lo hago con el motor andando', 'Pido que lo vigilen'], 0, 'Energía cero antes de cualquier intervención.'),
@@ -8261,7 +8263,7 @@ const CLA_SPOTS = {
   cla_bat_errores: [{ x: 50, y: 142, r: 26, l: 'Persona detrás de la batea' }, { x: 118, y: 40, r: 26, l: 'Cables sobre la batea' }, { x: 86, y: 166, r: 22, l: 'Piedra bajo la rueda: terreno inestable' }],
   cla_carg_errores: [{ x: 52, y: 140, r: 24, l: 'Persona en el punto ciego' }, { x: 205, y: 100, r: 22, l: 'Balde levantado al desplazarse' }, { x: 252, y: 98, r: 18, l: 'Persona subida al acopio' }],
   cla_insp: [{ x: 60, y: 162, r: 24, l: 'Neumático desinflado' }, { x: 182, y: 180, r: 22, l: 'Fuga de aceite' }, { x: 28, y: 138, r: 20, l: 'Luz trasera rota' }, { x: 153, y: 98, r: 20, l: 'Espejo suelto' }],
-  cla_ind_faena: [{ x: 88, y: 138, r: 24, l: 'Persona sin casco ni chaleco' }, { x: 50, y: 134, r: 20, l: 'Uso del celular en la faena' }, { x: 205, y: 130, r: 38, l: 'Cargador en movimiento con gente cerca' }]
+  cla_ind_faena: [{ x: 183, y: 111, r: 12, d: true, m: 'el operador va en cabina, con cinturón y atento: así debe estar.' }, { x: 33, y: 157, r: 17, d: true, m: 'este trabajador lleva casco y chaleco reflectante: está bien protegido.' }, { x: 88, y: 156, r: 20, l: 'Persona sin casco ni chaleco', m: 'en la faena todos usan casco y chaleco reflectante, siempre.' }, { x: 52, y: 135, r: 15, l: 'Uso del celular en la faena', m: 'el celular distrae: no se usa caminando cerca de maquinaria.' }, { x: 205, y: 140, r: 38, l: 'Cargador en movimiento con gente cerca', m: 'nadie debe estar en el radio de giro ni en el punto ciego del cargador.' }]
 };
 
 // ====== MOTOR: nuevos tipos de pregunta ======
@@ -8288,17 +8290,22 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   const barajar = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[b[i], b[j]] = [b[j], b[i]]; } return b; };
   // ---- A) tocar los peligros / errores
   function actHot(q) {
-    const spots = CLA_SPOTS[q.hot] || q.spots || [], tot = spots.length, B = $('qBody');
+    const spots = CLA_SPOTS[q.hot] || q.spots || [], tot = spots.filter(p => !p.d).length, B = $('qBody');
     B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="actinfo"><span>Encontrados: <b id="aF">0 de ${tot}</b></span><button class="actpista" id="aP">💡 Pista</button></div><div class="acthint" id="aH">Toca sobre la imagen donde veas un peligro o un error.</div></div>`;
     const ov = $('actOv'); let found = 0, miss = 0, done = false; const hit = new Set();
     const pista = () => { const s = spots.find((p, i) => !hit.has(i)); if (!s) return; $('aH').textContent = 'Pista: mira cerca de ' + (s.x < 107 ? 'la izquierda' : s.x > 213 ? 'la derecha' : 'el centro') + ' de la imagen.'; ov.insertAdjacentHTML('beforeend', `<circle cx="${s.x}" cy="${s.y}" r="${s.r + 8}" fill="none" stroke="#FFC20E" stroke-width="3" stroke-dasharray="6 4"><animate attributeName="opacity" values="1;0" dur="1.6s" fill="freeze"/></circle>`); };
     $('aP').onclick = pista;
-    const terminar = (ok) => { if (done) return; done = true; spots.forEach((s, i) => { if (!hit.has(i)) ov.insertAdjacentHTML('beforeend', `<circle cx="${s.x}" cy="${s.y}" r="${s.r}" fill="#FF9800" fill-opacity=".25" stroke="#FF9800" stroke-width="3"/>`); }); $('aH').innerHTML = spots.map(s => '• ' + s.l).join('<br>'); fin(ok); };
+    const terminar = (ok) => { if (done) return; done = true; spots.forEach((s, i) => { if (!s.d && !hit.has(i)) ov.insertAdjacentHTML('beforeend', `<circle cx="${s.x}" cy="${s.y}" r="${s.r}" fill="#FF9800" fill-opacity=".25" stroke="#FF9800" stroke-width="3"/>`); }); $('aH').innerHTML = spots.filter(s => !s.d).map(s => '• <b>' + s.l + '</b>' + (s.m ? ': ' + s.m : '')).join('<br>'); fin(ok); };
+    let tmr = null;
+    const msg = (html, col) => { const o = ov.querySelector('#actMsg'); if (o) o.remove(); ov.insertAdjacentHTML('beforeend', `<g id="actMsg"><rect x="8" y="44" width="304" height="46" rx="9" fill="#fff" fill-opacity=".96" stroke="${col}" stroke-width="3"/><foreignObject x="14" y="47" width="292" height="40"><div xmlns="http://www.w3.org/1999/xhtml" style="font:700 11.5px Arial,sans-serif;color:#222;line-height:1.25;display:flex;align-items:center;height:40px">${html}</div></foreignObject></g>`); };
     ov.onclick = e => {
       if (done) return; const r = ov.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 320, y = (e.clientY - r.top) / r.height * 200;
-      const i = spots.findIndex((s, k) => !hit.has(k) && Math.hypot(s.x - x, s.y - y) <= s.r);
-      if (i >= 0) { hit.add(i); found++; const s = spots[i]; ov.insertAdjacentHTML('beforeend', `<circle cx="${s.x}" cy="${s.y}" r="${s.r}" fill="#2E7D32" fill-opacity=".3" stroke="#2E7D32" stroke-width="4"/><path d="M${s.x - 8},${s.y} l6,7 l12,-14" stroke="#2E7D32" stroke-width="5" fill="none" stroke-linecap="round"/>`); $('aF').textContent = found + ' de ' + tot; $('aH').textContent = '✔ ' + s.l; SFX.play('ok'); if (found === tot) terminar(true); }
-      else { miss++; ov.insertAdjacentHTML('beforeend', `<circle cx="${f1c(x)}" cy="${f1c(y)}" r="9" fill="none" stroke="#C8102E" stroke-width="3"><animate attributeName="r" values="4;16" dur=".5s" fill="freeze"/><animate attributeName="opacity" values="1;0" dur=".7s" fill="freeze"/></circle>`); $('aH').textContent = 'Ahí no. Sigue buscando (usa 💡 Pista si necesitas ayuda).'; SFX.play('bad'); if (miss >= 5) terminar(false); }
+      const mk = ov.querySelectorAll('.mk'); let k = -1;
+      for (let n = 0; n < spots.length; n++) if (Math.hypot(spots[n].x - x, spots[n].y - y) <= spots[n].r) { k = n; break; }
+      if (k >= 0 && hit.has(k)) { hit.delete(k); found--; const g = ov.querySelector('.mk' + k); if (g) g.remove(); $('aF').textContent = found + ' de ' + tot; msg('↩ Marca quitada: ' + spots[k].l, '#9E9E9E'); clearTimeout(tmr); tmr = null; return; }
+      if (k >= 0 && spots[k].d) { miss++; const d = spots[k]; ov.insertAdjacentHTML('beforeend', `<circle cx="${d.x}" cy="${d.y}" r="${d.r}" fill="#C8102E" fill-opacity=".18" stroke="#C8102E" stroke-width="3"><animate attributeName="opacity" values="1;0" dur="1.6s" fill="freeze"/></circle>`); msg('<span><span style="color:#C62828">✖ NO es un riesgo:</span> ' + d.m + '</span>', '#C62828'); SFX.play('bad'); if (miss >= 5) terminar(false); return; }
+      if (k >= 0) { hit.add(k); found++; const s = spots[k]; ov.insertAdjacentHTML('beforeend', `<g class="mk mk${k}"><circle cx="${s.x}" cy="${s.y}" r="${s.r}" fill="#2E7D32" fill-opacity=".3" stroke="#2E7D32" stroke-width="4"/><path d="M${s.x - 8},${s.y} l6,7 l12,-14" stroke="#2E7D32" stroke-width="5" fill="none" stroke-linecap="round"/></g>`); $('aF').textContent = found + ' de ' + tot; msg('<span><span style="color:#2E7D32">✔ ' + s.l + ':</span> ' + (s.m || 'es un riesgo.') + ' <i style="color:#777">(Toca otra vez para quitar la marca)</i></span>', '#2E7D32'); SFX.play('ok'); if (found === tot) { clearTimeout(tmr); tmr = setTimeout(() => { if (found === tot) terminar(true); }, 3200); } return; }
+      miss++; ov.insertAdjacentHTML('beforeend', `<circle cx="${f1c(x)}" cy="${f1c(y)}" r="9" fill="none" stroke="#C8102E" stroke-width="3"><animate attributeName="r" values="4;16" dur=".5s" fill="freeze"/><animate attributeName="opacity" values="1;0" dur=".7s" fill="freeze"/></circle>`); $('aH').textContent = 'Ahí no. Sigue buscando (usa 💡 Pista si necesitas ayuda).'; SFX.play('bad'); if (miss >= 5) terminar(false);
     };
     encabezado(q, ' Toca en la imagen los ' + tot + ' problemas.');
   }
@@ -8407,7 +8414,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   }
   // --- REPLICAR la idea en TODAS las charlas: actividad "une el tema con su idea clave" + 2 pasos animados de la primera escena
   TOPICS.forEach(t => {
-    if (!t.learn || t.learn.length < 3 || t.quiz.some(q => q.match)) return;
+    return; if (!t.learn || t.learn.length < 3 || t.quiz.some(q => q.match)) return;
     const c = t.learn.filter(l => l.k && l.t && l.t.length <= 52 && l.k.length <= 70);
     if (c.length < 3) return;
     const pick = [c[0], c[Math.floor(c.length / 2)], c[c.length - 1]].filter((v, i, a) => a.indexOf(v) === i);
@@ -8469,6 +8476,27 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
         return g;
       }
     },
+    distancia: {
+      go: '▶ FRENA EL CAMIÓN DE ADELANTE', fac: [
+        { k: 'dist', t: 'Distancia con el de adelante', g: '3 segundos o más', b: 'Pegado', m: 'Pegado no alcanza a frenar: se exige 3 segundos o más, y más aún con carga o lluvia.' },
+        { k: 'vel', t: 'Velocidad', g: 'Moderada', b: 'Alta', m: 'A mayor velocidad, mayor distancia de frenado.' },
+        { k: 'cel', t: 'Atención', g: 'Mirando el camino', b: 'Con el celular', m: 'El celular distrae: un segundo sin mirar son metros recorridos a ciegas.' },
+        { k: 'luz', t: 'Luces', g: 'Encendidas', b: 'Apagadas', m: 'Con luces encendidas te ven y ves las luces de freno de adelante.' }],
+      scene: (s, a) => {
+        const gap = s.dist === 'g' ? 54 : 6, xL = 186, xF = xL - 124 - gap + (s.dist === 'g' ? 0 : 0) + (s.vel === 'b' ? (a || 0) * .1 : 0);
+        let g = clRoad();
+        g += clCamion(xF, 172, .4, { exact: true, driver: true }) + clCamion(xL, 172, .4, { exact: true, brake: (a || 0) > 4 });
+        if (s.cel === 'b') g += `<rect x="${xF + 98}" y="104" width="12" height="18" rx="2" fill="#111" stroke="#fff"/>`;
+        if (s.luz === 'g') g += `<g class="an-flash"><circle cx="${xF + 118}" cy="150" r="4" fill="#FFF59D"/></g>`;
+        return g;
+      },
+      fail: (s, a) => {
+        let g = '';
+        const hit = s.dist === 'b' || (s.vel === 'b' && s.cel === 'b');
+        if (hit && a > 14) g += clFlash(184, 140, 14);
+        return g;
+      }
+    },
     cargador: {
       go: '▶ MOVER EL CARGADOR', fac: [
         { k: 'balde', t: 'Balde', g: 'Bajo (30 cm)', b: 'Levantado', m: 'Con el balde alto el cargador puede volcar y soltar la carga.' },
@@ -8509,7 +8537,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       if (done || busy) return; busy = true; tries++;
       const bad = C.fac.filter(f => state[f.k] === 'b'); let a = 0; const t0 = performance.now();
       const step = ts => {
-        a = Math.min(30, (ts - t0) / 25); draw(q.build === 'cargador' ? Math.min(30, (ts - t0) / 25) : a);
+        a = Math.min(30, (ts - t0) / 25); draw(a);
         if (a < 30) return requestAnimationFrame(step);
         if (!bad.length) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> Maniobra segura: terreno, entorno y personas controlados.'; try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
         $('bldH').innerHTML = '✖ <b>Maniobra insegura.</b> ' + bad.map(f => f.m).join(' ');
@@ -8529,6 +8557,8 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   const pi = T('cl_piso'); if (pi) pi.quiz.splice(Math.min(3, pi.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y descargue la batea', build: 'batea', w: 'Se descarga solo en terreno plano, sin cables arriba, con nadie detrás y con la zona señalizada.' });
   const ca = T('cl_cargador'); if (ca) ca.quiz.splice(Math.min(3, ca.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y mueva el cargador', build: 'cargador', w: 'Balde bajo, trabajador fuera del radio, baja velocidad y baliza/alarma encendidas.' });
   const ind = T('induccion'); if (ind) ind.quiz.splice(Math.min(4, ind.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y descargue la batea', build: 'batea', w: 'Terreno plano, sin cables, nadie detrás y zona señalizada.' });
+  const ct = T('cl_caminos'); if (ct) ct.quiz.splice(Math.min(3, ct.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y frene el camión de adelante', build: 'distancia', w: 'Distancia de 3 segundos o más, velocidad moderada, atención en el camino y luces encendidas.' });
+  const ind2 = T('induccion'); if (ind2) ind2.quiz.splice(Math.min(6, ind2.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y frene el camión de adelante', build: 'distancia', w: 'Distancia de 3 segundos o más, velocidad moderada, atención en el camino y luces encendidas.' });
 })();
 
 // ===== Transportes Claudio Lagos: temas por sección, "Mi ruta" según el cargo, empresa y obra =====
