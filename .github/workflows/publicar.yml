@@ -14,9 +14,11 @@ jobs:
         run: |
           curl -fL "https://drive.google.com/uc?export=download&id=1Lh2hfOxZTegAy-yE5F5iV_sQ7XzOPgql" -o index.html
           curl -fL "https://drive.google.com/uc?export=download&id=1Hhll363NYxIz2b5vIMH1YWwpKNkM-cAm" -o panel.html
-          head -c 15 index.html; echo; head -c 15 panel.html; echo
+          curl -fL "https://drive.google.com/uc?export=download&id=1Fk6zbWrWMiO0FTlkfsrxp6Y7-41kDjf2" -o inscripcion.html
+          head -c 15 index.html; echo; head -c 15 panel.html; echo; head -c 15 inscripcion.html; echo
           grep -q "<title>Capacitaciones Transportes Claudio Lagos" index.html
           grep -qi "<!doctype html" panel.html
+          grep -qi "<!doctype html" inscripcion.html
           touch .nojekyll
       - name: Guardar en el repositorio
         run: |
