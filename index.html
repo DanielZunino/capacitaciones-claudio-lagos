@@ -8266,19 +8266,20 @@ S.cla_carg_errores = () => sv(clAcopio({ sun: false }) + `<circle cx="116" cy="1
 // ---------- INSPECCIÓN DEL CAMIÓN ----------
 S.cla_insp = () => sv(clRoad({ sun: false }) + clCamion(26, 172, .8, { driver: false }) + `<ellipse cx="60" cy="163" rx="14" ry="9" fill="#2B2D2F" stroke="#000" stroke-width="1.4"/>` + `<rect x="186" y="124" width="9" height="9" rx="2" fill="#555" stroke="#000"/><path d="M182,172 q2,8 0,14" stroke="#111" stroke-width="3" fill="none"><animate attributeName="stroke-opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></path><ellipse cx="182" cy="188" rx="9" ry="3" fill="#111" opacity=".7"/>` + `<rect x="34" y="143" width="5" height="9" fill="#555"/><rect x="150" y="91" width="5" height="14" fill="#111" transform="rotate(25 152 98)"/>` + clLbl(160, 22, 'Revisión antes de salir: toca 4 problemas', '#263238', 12));
 // ---------- INDUCCIÓN: faena ----------
-S.cla_ind_faena = () => sv(clAcopio() + clMan(24, 186, { pose: 'stand', vest: false, helmet: false, shirt: '#455A64' }) + clMan(66, 186, { pose: 'carry' }) + '<rect x="72" y="158" width="7" height="12" rx="2" fill="#263238" stroke="#000"/><rect x="73.3" y="160" width="4.4" height="8" fill="#80D8FF"/>' + clMan(108, 186, { pose: 'stand' }) + clCone(130, 186) + clCargador(172, 178, .66, { driver: true, load: true, lift: 18 }) + clMan(302, 190, { pose: 'stand' }));
+S.cla_ind_faena = () => sv(clAcopio() + clMan(22, 186, { pose: 'stand' }) + clMan(62, 186, { pose: 'stand', vest: false, helmet: false, shirt: '#455A64' }) + clMan(100, 186, { pose: 'carry' }) + '<rect x="106" y="158" width="7" height="12" rx="2" fill="#263238" stroke="#000"/><rect x="107.3" y="160" width="4.4" height="8" fill="#80D8FF"/>' + clCone(132, 186) + clCargador(172, 178, .66, { driver: true, load: true, lift: 18 }) + clMan(302, 190, { pose: 'stand' }));
 const CLA_SPOTS = {
   cla_bat_errores: [{ x: 50, y: 142, r: 26, l: 'Persona detrás de la batea' }, { x: 118, y: 40, r: 26, l: 'Cables sobre la batea' }, { x: 86, y: 166, r: 22, l: 'Piedra bajo la rueda: terreno inestable' }],
   cla_carg_errores: [{ x: 52, y: 140, r: 24, l: 'Persona en el punto ciego' }, { x: 205, y: 100, r: 22, l: 'Balde levantado al desplazarse' }, { x: 252, y: 98, r: 18, l: 'Persona subida al acopio' }],
   cla_insp: [{ x: 60, y: 162, r: 24, l: 'Neumático desinflado' }, { x: 182, y: 180, r: 22, l: 'Fuga de aceite' }, { x: 28, y: 138, r: 20, l: 'Luz trasera rota' }, { x: 153, y: 98, r: 20, l: 'Espejo suelto' }],
   cla_ind_faena: [
+    { x: 22, y: 138, t: 'Trabajador con casco y chaleco, lejos del cargador', risk: false, m: 'Está bien: usa su protección y está lejos de la máquina, a buena distancia.' },
+    { x: 62, y: 138, t: 'Persona de azul, sin casco ni chaleco reflectante', risk: true, m: 'Es riesgo: sin casco ni chaleco no la ven y queda sin protección.' },
+    { x: 100, y: 138, t: 'Trabajador mirando su celular', risk: true, m: 'Es riesgo: con el celular se distrae. En la faena no se usa.' },
+    { x: 132, y: 152, t: 'Cono de señalización en el suelo', risk: false, m: 'Está bien: el cono marca y delimita la zona.' },
     { x: 240, y: 110, t: 'El operador va dentro de la cabina, con cinturón y atento', risk: false, m: 'Está bien: el operador va en cabina, con cinturón y atento.' },
-    { x: 24, y: 138, t: 'Persona de azul, sin casco ni chaleco reflectante', risk: true, m: 'Es riesgo: sin casco ni chaleco no la ven y queda sin protección.' },
-    { x: 66, y: 138, t: 'Trabajador mirando su celular', risk: true, m: 'Es riesgo: con el celular se distrae. En la faena no se usa.' },
-    { x: 108, y: 138, t: 'Trabajador con casco y chaleco, lejos del cargador', risk: false, m: 'Está bien: usa su protección y está a buena distancia de la máquina.' },
-    { x: 130, y: 152, t: 'Cono de señalización en el suelo', risk: false, m: 'Está bien: el cono marca y delimita la zona.' },
-    { x: 302, y: 140, t: 'Trabajador con casco y chaleco, parado pegado al cargador', risk: true, m: 'Es riesgo: está en el punto ciego y en el radio de giro. Nadie debe estar cerca de la máquina en movimiento.' }
+    { x: 302, y: 140, t: 'Trabajador al lado del balde del cargador', risk: true, m: 'Es riesgo: está pegado a la máquina, en el punto ciego y en el radio de giro. Nadie debe estar cerca de un cargador en movimiento.' }
   ],
+
 };
 
 // ====== MOTOR: nuevos tipos de pregunta ======
@@ -8292,7 +8293,7 @@ const CLA_SPOTS = {
 .ordb.ok{background:#1B5E20;border-color:#7CFC8A}.ordb.ok .n{background:#2E7D32}.ordb.bad{animation:anShake .45s;background:#7F1D1D;border-color:#FF8A80}
 .mcol{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.mb{border:2px solid #fff;background:#1d1d1d;color:#fff;border-radius:14px;padding:12px 10px;font-size:15px;font-weight:700;font-family:inherit;min-height:64px;text-align:center}.mb.sel{background:#C8102E;border-color:#FFC20E}.mb.ok{background:#1B5E20;border-color:#7CFC8A}.mb.bad{animation:anShake .45s;background:#7F1D1D}
 .simbtn{display:block;width:100%;margin-top:12px;border:0;border-radius:16px;background:#C8102E;color:#fff;font-size:22px;font-weight:900;padding:18px 10px;box-shadow:0 4px 0 #7a0a1d}.simbtn:active{transform:translateY(3px);box-shadow:none}
-.cfl{display:flex;flex-direction:column;gap:10px;margin-top:10px}.cfr{background:#1d1d1d;border:2px solid #555;border-radius:14px;padding:10px}.cfr.cok{border-color:#7CFC8A;background:#12301a}.cfr.cbad{border-color:#FF8A80;background:#3a1414}.cft{display:flex;gap:10px;align-items:center;color:#fff;font-weight:700;font-size:16px;line-height:1.25}.cfn{flex:none;width:30px;height:30px;border-radius:50%;background:#1565C0;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900}.cfb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cfa{border:2px solid #fff;background:#2a2a2a;color:#fff;border-radius:12px;padding:12px 6px;font-size:16px;font-weight:800;font-family:inherit;min-height:50px}.cfa.sel{background:#C8102E;border-color:#FFC20E}.cfa.good{outline:3px solid #7CFC8A}.cfm{color:#fff;font-size:15px;margin-top:8px;line-height:1.3}.cfm:empty{display:none}
+.cfl{display:flex;flex-direction:column;gap:10px;margin-top:10px}.cfr{background:#1d1d1d;border:2px solid #555;border-radius:14px;padding:10px}.cfr.cok{border-color:#7CFC8A;background:#12301a}.cfr.cbad{border-color:#FF8A80;background:#3a1414}.cft{display:flex;gap:10px;align-items:center;color:#fff;font-weight:700;font-size:16px;line-height:1.25}.cfn{flex:none;width:30px;height:30px;border-radius:50%;background:#1565C0;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900}.cfb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cfa{border:2px solid #fff;background:#2a2a2a;color:#fff;border-radius:12px;padding:12px 6px;font-size:16px;font-weight:800;font-family:inherit;min-height:50px}.cfa.sel{background:#C8102E;border-color:#FFC20E}.cfa.sel[data-v="1"]{background:#E65100;border-color:#FFE082}.cfa.sel[data-v="0"]{background:#1B5E20;border-color:#7CFC8A}.cfa.good{outline:3px solid #7CFC8A}.cfm{color:#fff;font-size:15px;margin-top:8px;line-height:1.3}.cfm:empty{display:none}.cfr.pend{border-color:#FFC20E;background:#2e2a12}.cfr.falta{animation:anShake .45s}
 .bfac{margin-top:10px;background:#1d1d1d;border:2px solid #555;border-radius:14px;padding:10px}.bfac.hecho{border-color:#7CFC8A}.bfac.falta{border-color:#FFC20E;animation:anShake .45s}.bft{display:flex;gap:10px;align-items:center;color:#fff;font-weight:800;font-size:17px}.bfq{color:#FFC20E;font-size:14px;font-weight:700;margin:6px 0 7px 2px}.bfb{display:grid;grid-template-columns:1fr 1fr;gap:9px}.bo{position:relative;font-size:16px;min-height:62px}.bo .bok{display:none}.bo.sel{background:#1B5E20;border-color:#7CFC8A}.bo.sel .bok{display:inline-block;margin-right:6px;color:#7CFC8A;font-weight:900}
 svg{filter:saturate(1.28) contrast(1.04)}`;
   document.head.appendChild(st0);
@@ -8308,22 +8309,31 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   // ---- A2) marcar cada situación: "Es riesgo" / "Está bien", se puede cambiar y luego se confirma
   function actConf(q) {
     const it = CLA_SPOTS[q.hot], B = $('qBody'), ans = it.map(() => null); let done = false;
-    const num = (x, y, n, c, t) => `<g><circle cx="${x}" cy="${y}" r="8.5" fill="${c}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="11" fill="#fff">${t || n}</text></g>`;
-    B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="cursor:default">${it.map((o, i) => num(o.x, o.y, i + 1, '#1565C0')).join('')}</svg></div></div><div class="acthint" id="aH">Mire cada número de la imagen y elija: <b>Es riesgo</b> o <b>Está bien</b>. Puede cambiar su respuesta antes de confirmar.</div><div class="cfl">${it.map((o, i) => `<div class="cfr" id="cfr${i}"><div class="cft"><span class="cfn">${i + 1}</span><span>${o.t}</span></div><div class="cfb"><button class="cfa" data-i="${i}" data-v="1">⚠ Es riesgo</button><button class="cfa" data-i="${i}" data-v="0">✔ Está bien</button></div><div class="cfm" id="cfm${i}"></div></div>`).join('')}</div><button class="simbtn" id="cfOk">Confirmar mis respuestas</button>`;
+    const num = (x, y, n, c, t) => `<g><circle cx="${x}" cy="${y}" r="10" fill="${c}" stroke="#fff" stroke-width="2.2"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="12" fill="#fff">${t || n}</text></g>`;
+    B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="cursor:default">${it.map((o, i) => num(o.x, o.y, i + 1, '#1565C0')).join('')}</svg></div></div><div class="acthint" id="aH"><b>Toque cada persona o número EN LA IMAGEN</b>: 1 toque = <b style=\"color:#E65100\">⚠ Es riesgo</b>, 2 toques = <b style=\"color:#2E7D32\">✔ Está bien</b>, 3 toques = quitar. También puede usar los botones de abajo. Cuando termine, toque <b>Confirmar mis respuestas</b>.</div><div class="cfl">${it.map((o, i) => `<div class="cfr" id="cfr${i}"><div class="cft"><span class="cfn">${i + 1}</span><span>${o.t}</span></div><div class="cfb"><button class="cfa" data-i="${i}" data-v="1">⚠ Es riesgo</button><button class="cfa" data-i="${i}" data-v="0">✔ Está bien</button></div><div class="cfm" id="cfm${i}"></div></div>`).join('')}</div><button class="simbtn" id="cfOk">Confirmar mis respuestas</button>`;
     const ov = $('actOv'), falta = () => ans.filter(a => a === null).length;
-    const pintar = () => { ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === null ? '#1565C0' : ans[i] ? '#E65100' : '#2E7D32')).join(''); const f = falta(); $('cfOk').textContent = f ? 'Confirmar mis respuestas (faltan ' + f + ')' : 'Confirmar mis respuestas'; $('cfOk').style.opacity = f ? '.6' : '1'; };
+    const setAns = (i, v) => { if (typeof lock !== 'undefined' && lock[i]) return; ans[i] = v; if (v !== null) { const r = $('cfr' + i); r.classList.remove('pend', 'cbad'); $('cfm' + i).innerHTML = ''; } B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.toggle('sel', ans[i] !== null && +x.dataset.v === ans[i])); SFX.play('ok'); pintar(); };
+    ov.style.cursor = 'pointer';
+    ov.onclick = e => { if (done) return; const r = ov.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 320, y = (e.clientY - r.top) / r.height * 200; let k = -1, bd = 1e9; it.forEach((o, i) => { const dx = Math.abs(o.x - x); if (dx <= 20 && y >= o.y - 16 && y <= o.y + 55 && dx < bd) { bd = dx; k = i; } }); if (k < 0 || lock[k]) return; setAns(k, ans[k] === null ? 1 : ans[k] === 1 ? 0 : null); };
+    const pintar = () => { ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === null ? '#1565C0' : ans[i] ? '#E65100' : '#2E7D32', ans[i] === null ? '' : ans[i] ? '⚠' : '✔')).join(''); const f = falta(); $('cfOk').textContent = f ? 'Confirmar mis respuestas (faltan ' + f + ')' : 'Confirmar mis respuestas'; $('cfOk').style.opacity = f ? '.6' : '1'; };
     B.querySelectorAll('.cfa').forEach(b => b.onclick = () => {
       if (done) return; const i = +b.dataset.i, v = +b.dataset.v;
-      ans[i] = ans[i] === v ? null : v;
-      B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.toggle('sel', ans[i] !== null && +x.dataset.v === ans[i]));
-      SFX.play('ok'); pintar();
+      setAns(i, ans[i] === v ? null : v);
     });
+    let tries = 0; const lock = it.map(() => false), esOk = i => ans[i] === (it[i].risk ? 1 : 0);
     $('cfOk').onclick = () => {
-      if (done) return; const f = falta();
-      if (f) { $('aH').innerHTML = '⚠ Le faltan <b>' + f + '</b> por responder. Elija una opción en cada número.'; SFX.play('bad'); return; }
+      if (done) return; const pend = it.map((o, i) => i).filter(i => ans[i] === null);
+      if (pend.length) { $('aH').innerHTML = '⚠ <b>Le falta responder:</b> ' + pend.map(i => 'número ' + (i + 1)).join(', ') + '. Están marcados en amarillo.'; pend.forEach(i => { const r = $('cfr' + i); r.classList.add('pend'); r.classList.add('falta'); setTimeout(() => r.classList.remove('falta'), 1400); }); SFX.play('bad'); $('cfr' + pend[0]).scrollIntoView({ block: 'center', behavior: 'smooth' }); return; }
+      tries++; const malos = it.map((o, i) => i).filter(i => !esOk(i));
+      if (malos.length && tries < 3) {
+        malos.forEach(i => { const r = $('cfr' + i); ans[i] = null; r.classList.remove('pend'); r.classList.add('cbad'); $('cfm' + i).innerHTML = '❌ <b>Esta no es correcta.</b> Piénselo de nuevo y elija otra vez.'; B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.remove('sel')); });
+        it.forEach((o, i) => { if (esOk(i) && !lock[i]) { lock[i] = true; const r = $('cfr' + i); r.classList.remove('cbad'); r.classList.add('cok'); $('cfm' + i).innerHTML = '✅ <b>Correcto.</b>'; B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.disabled = true); } });
+        $('aH').innerHTML = '<b>' + (it.length - malos.length) + ' de ' + it.length + ' bien.</b> Corrija las ' + malos.length + ' marcadas en rojo y confirme de nuevo. <b>Le quedan ' + (3 - tries) + ' oportunidad' + (3 - tries > 1 ? 'es' : '') + '.</b>';
+        SFX.play('bad'); pintar(); $('cfr' + malos[0]).scrollIntoView({ block: 'center', behavior: 'smooth' }); return;
+      }
       done = true; let bien = 0;
-      it.forEach((o, i) => { const ok = ans[i] === (o.risk ? 1 : 0); if (ok) bien++; $('cfr' + i).classList.add(ok ? 'cok' : 'cbad'); $('cfm' + i).innerHTML = (ok ? '✅ <b>Correcto.</b> ' : '❌ <b>Incorrecto.</b> ') + o.m; B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => { x.disabled = true; if (+x.dataset.v === (o.risk ? 1 : 0)) x.classList.add('good'); }); });
-      ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === (o.risk ? 1 : 0) ? '#2E7D32' : '#C62828', ans[i] === (o.risk ? 1 : 0) ? '✔' : '✖')).join('');
+      it.forEach((o, i) => { const ok = esOk(i); if (ok) bien++; const r = $('cfr' + i); r.classList.remove('pend', 'cbad', 'cok'); r.classList.add(ok ? 'cok' : 'cbad'); $('cfm' + i).innerHTML = (ok ? '✅ <b>Correcto.</b> ' : '❌ <b>Incorrecto.</b> ') + o.m; B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => { x.disabled = true; if (+x.dataset.v === (o.risk ? 1 : 0)) x.classList.add('good'); }); });
+      ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, esOk(i) ? '#2E7D32' : '#C62828', esOk(i) ? '✔' : '✖')).join('');
       $('cfOk').style.display = 'none'; $('aH').innerHTML = '<b>' + bien + ' de ' + it.length + ' respuestas correctas.</b>';
       fin(bien === it.length);
     };
@@ -8580,7 +8590,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
     for (let k = -1; k < 4; k++) { const px = k * 110 - po + 110; g += `<rect x="${px}" y="138" width="4" height="14" fill="#fff"/><rect x="${px}" y="138" width="4" height="4" fill="#D7262B"/>`; }
     g += `<line x1="0" y1="176" x2="320" y2="176" stroke="#FFC20E" stroke-width="3" stroke-dasharray="22 16" stroke-dashoffset="${f1c(mod(X * 7, 38))}"/>`;
     const tr = (x, o, pit, bob) => `<g transform="translate(0,${f1c(bob)}) rotate(${f1c(pit)} ${x + 62} 172)">${clCamion(x, 172, .4, Object.assign({ exact: true }, o))}</g>`;
-    const bob = m.v > .5 ? Math.sin(X * 2.2) * .5 : 0;
+    const bob = m.v > .5 ? Math.sin(X * 2.2) * .9 : 0;
     window.__trk = 0; g += tr(xL, { brake: m.lb }, m.pL || 0, bob * .8);
     window.__trk = 0; g += tr(xF, { driver: true, brake: m.fb }, m.pF || 0, bob);
     if (m.cel) g += `<rect x="${xF + 98}" y="104" width="12" height="18" rx="2" fill="#111" stroke="#fff"/><rect x="${xF + 100}" y="107" width="8" height="11" fill="#80D8FF"/>`;
@@ -8595,9 +8605,20 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
     const order = C.fac.map(() => Math.random() < .5);
     const QS = { distancia: { dist: '¿A qué distancia debo ir del camión de adelante?', vel: '¿A qué velocidad debo ir?', cel: '¿En qué condición de atención debo ir?', luz: '¿Cómo deben ir las luces del camión?' }, batea: { terreno: '¿Cómo debe ser el terreno donde descargo?', cables: '¿Qué debe haber hacia arriba, sobre la batea?', gente: '¿Quién puede estar detrás del camión al descargar?', conos: '¿Cómo debe estar la zona de descarga?' }, cargador: { balde: '¿A qué altura debo llevar el balde?', gente: '¿Dónde debe estar el trabajador que va a pie?', vel: '¿A qué velocidad debo mover el cargador?', alarma: '¿Cómo deben ir las señales del cargador?' } };
     const view = () => { const v = {}; C.fac.forEach(f => v[f.k] = state[f.k] || 'g'); return v; };
-    const draw = (a) => { window.__trk = 0; const sv_ = view(); $('bldS').innerHTML = isSim ? simScene(sv_, { X: 0, gap: sv_.dist === 'g' ? SIM.gG : SIM.gB, v: 0, cel: sv_.cel === 'b' }) : C.scene(sv_, a) + C.fail(sv_, a); };
+    let prevRaf = 0, simRun = false, prevX = 0;
+    const startPrev = () => {
+      if (prevRaf) return; let last = performance.now();
+      const f = now => {
+        if (simRun || !document.body.contains($('bldS'))) { prevRaf = 0; return; }
+        const dt = Math.min(.05, (now - last) / 1000); last = now; const sv_ = view(), v = sv_.vel === 'g' ? SIM.vG : SIM.vB; prevX += v * dt;
+        window.__trk = 0; $('bldS').innerHTML = simScene(sv_, { X: prevX, gap: sv_.dist === 'g' ? SIM.gG : SIM.gB, v, cel: sv_.cel === 'b' });
+        prevRaf = requestAnimationFrame(f);
+      };
+      prevRaf = requestAnimationFrame(f);
+    };
+    const draw = (a) => { if (isSim) return startPrev(); window.__trk = 0; const sv_ = view(); $('bldS').innerHTML = C.scene(sv_, a) + C.fail(sv_, a); };
     const falta = () => C.fac.filter(f => !state[f.k]).length;
-    B.innerHTML = `<div class="actimg"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH"><b>Cómo se hace:</b><br>① En cada recuadro, toque la opción <b>CORRECTA</b> (la más segura).<br>② Cuando las ${C.fac.length} estén elegidas, toque el botón rojo.<br><i>Puede cambiar su elección las veces que quiera.</i></div>` +
+    B.innerHTML = `<div class="actimg"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH"><b>Cómo se hace:</b><br>① En cada recuadro, toque la opción <b>CORRECTA</b> (la más segura).<br>② Cuando las ${C.fac.length} estén elegidas, toque el botón rojo.<br><i>Si se equivoca, toque otra opción para reemplazarla, o toque la misma para quitarla. Puede cambiar antes de pulsar el botón rojo.</i></div>` +
       C.fac.map((f, i) => { const o = order[i] ? [['g', f.g], ['b', f.b]] : [['b', f.b], ['g', f.g]]; return `<div class="bfac" data-k="${f.k}"><div class="bft"><span class="cfn">${i + 1}</span><span>${ICO[f.k] || ''} ${f.t}</span></div><div class="bfq">${(QS[q.build] || {})[f.k] || '¿Cuál es lo correcto?'}</div><div class="bfb">${o.map(([v, tx]) => `<button class="mb bo" data-v="${v}"><span class="bok">✔</span>${tx}</button>`).join('')}</div></div>`; }).join('') +
       `<button class="simbtn" id="bldB" style="opacity:.55">Elija las ${C.fac.length} condiciones (faltan ${C.fac.length})</button>`;
     draw(0);
@@ -8608,14 +8629,15 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       r.classList.toggle('hecho', !!state[k]); draw(0); refrescar(); try { SFX.play('ok'); } catch (e) {}
     }));
     const terminarIntento = (bad, choco) => {
-      if (!bad.length && !choco) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> ' + (isSim ? 'Frenó a tiempo y quedó a distancia segura.' : 'Maniobra segura: terreno, entorno y personas controlados.'); try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
+      if (!bad.length && !choco) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> ' + (isSim ? 'Frenó a tiempo y quedó a distancia segura.' : 'Maniobra segura: terreno, entorno y personas controlados.') + '<br>👇 Toque <b>Avanzar</b> para continuar con la siguiente pregunta.'; try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
       $('bldH').innerHTML = '✖ <b>' + (isSim ? '¡Choque!' : 'Maniobra insegura.') + '</b> ' + bad.map(f => f.m).join(' ');
       try { SFX.play('bad'); } catch (e) {}
       if (tries >= 3) { done = true; $('bldH').innerHTML += ' <br>La condición segura era: ' + C.fac.map(f => f.g).join(' · ') + '.'; return setTimeout(() => answer(dummy(), false), 1800); }
       $('bldH').innerHTML += '<br><b>Cambie las opciones que están mal y vuelva a probar</b> (le quedan ' + (3 - tries) + ' intentos).';
-      setTimeout(() => { busy = false; draw(0); }, 2200);
+      setTimeout(() => { busy = false; simRun = false; draw(0); try { $('bldH').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 2200);
     };
     const correrSim = (bad) => {
+      simRun = true; cancelAnimationFrame(prevRaf); prevRaf = 0;
       const sv_ = view(), v0 = sv_.vel === 'g' ? SIM.vG : SIM.vB, gap0 = sv_.dist === 'g' ? SIM.gG : SIM.gB, rx = SIM.rBase + (sv_.cel === 'b' ? SIM.rCel : 0) + (sv_.luz === 'b' ? SIM.rLuz : 0);
       let xl = gap0, xf = 0, vl = v0, vf = v0, tBr = 1.6, t = 0, last = performance.now(), crash = 0, choco = false, fSound = false, fb = false, end = 0, shake = 0, vfI = 0;
       try { SFX.play('motor'); } catch (e) {}
@@ -8646,6 +8668,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       if (done || busy) return;
       const f = falta(); if (f) { $('bldH').innerHTML = '⚠ Le faltan <b>' + f + '</b>. Toque una opción en cada recuadro que no tenga ✔.'; B.querySelectorAll('.bfac:not(.hecho)').forEach(r => { r.classList.add('falta'); setTimeout(() => r.classList.remove('falta'), 1400); }); try { SFX.play('bad'); } catch (e) {} return; }
       busy = true; tries++;
+      try { $('bldS').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
       const bad = C.fac.filter(f => state[f.k] === 'b');
       if (isSim) return correrSim(bad);
       let a = 0; const t0 = performance.now();
