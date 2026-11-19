@@ -5520,6 +5520,8 @@ NORMAS.enfermedades = { obj: 'Que la persona trabajadora reconozca los efectos e
 // ===== Inducción de Prevención de Riesgos (IRL) · charla madre, obligatoria antes de todo · vigencia 18 meses =====
 var IND_REGLAMENTOS = { 'Transportes Claudio Lagos EIRL': 1, 'Transportes Santa Sofía': 1, 'Servicios Mecánicos Claudio Lagos': 1, 'Fabiola Gutiérrez': 1, 'Claudio Lagos Morales': 1 };
 // El Reglamento Interno (RIOHS) lo entrega el servidor: siempre el PDF más reciente de la empresa del trabajador, solo para leer
+var indEmpKey = e => { if (IND_REGLAMENTOS[e]) return e; const u = String(e || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  if (/SANTA SOFIA/.test(u)) return 'Transportes Santa Sofía'; if (/SERV/.test(u) && /MEC/.test(u)) return 'Servicios Mecánicos Claudio Lagos'; if (/FABIOLA/.test(u)) return 'Fabiola Gutiérrez'; if (/MORALES/.test(u)) return 'Claudio Lagos Morales'; if (/CLAUDIO LAGOS|TRANS/.test(u)) return 'Transportes Claudio Lagos EIRL'; return null; };
 var indRiohs = k => SCRIPT_URL + '?riohs=1&e=' + encodeURIComponent(k || '');
 var IND_FORMULARIO = 'https://docs.google.com/forms/d/16ZpOz8VJtD9ZvwYeVaYjJO--z3SnpRWykrn2ndw1wWA/viewform';
 var IND_MESES = 18;
@@ -8310,12 +8312,25 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   function actConf(q) {
     const it = CLA_SPOTS[q.hot], B = $('qBody'), ans = it.map(() => null); let done = false;
     const num = (x, y, n, c, t) => `<g><circle cx="${x}" cy="${y}" r="10" fill="${c}" stroke="#fff" stroke-width="2.2"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="12" fill="#fff">${t || n}</text></g>`;
-    B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="cursor:default">${it.map((o, i) => num(o.x, o.y, i + 1, '#1565C0')).join('')}</svg></div></div><div class="acthint" id="aH"><b>Toque cada persona o número EN LA IMAGEN</b>: 1 toque = <b style=\"color:#E65100\">⚠ Es riesgo</b>, 2 toques = <b style=\"color:#2E7D32\">✔ Está bien</b>, 3 toques = quitar. También puede usar los botones de abajo. Cuando termine, toque <b>Confirmar mis respuestas</b>.</div><div class="cfl">${it.map((o, i) => `<div class="cfr" id="cfr${i}"><div class="cft"><span class="cfn">${i + 1}</span><span>${o.t}</span></div><div class="cfb"><button class="cfa" data-i="${i}" data-v="1">⚠ Es riesgo</button><button class="cfa" data-i="${i}" data-v="0">✔ Está bien</button></div><div class="cfm" id="cfm${i}"></div></div>`).join('')}</div><button class="simbtn" id="cfOk">Confirmar mis respuestas</button>`;
+    B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="cursor:default">${it.map((o, i) => num(o.x, o.y, i + 1, '#1565C0')).join('')}</svg></div></div><div class="acthint" id="aH"><b>Toque una persona o número EN LA IMAGEN</b> y elija: <b style=\"color:#E65100\">⚠ Es riesgo</b> o <b style=\"color:#2E7D32\">✔ No es riesgo</b>. Para cambiar, vuelva a tocarla. También puede usar los botones de abajo. Cuando termine, toque <b>Confirmar mis respuestas</b>.</div><div class="cfl">${it.map((o, i) => `<div class="cfr" id="cfr${i}"><div class="cft"><span class="cfn">${i + 1}</span><span>${o.t}</span></div><div class="cfb"><button class="cfa" data-i="${i}" data-v="1">⚠ Es riesgo</button><button class="cfa" data-i="${i}" data-v="0">✔ No es riesgo</button></div><div class="cfm" id="cfm${i}"></div></div>`).join('')}</div><button class="simbtn" id="cfOk">Confirmar mis respuestas</button>`;
     const ov = $('actOv'), falta = () => ans.filter(a => a === null).length;
-    const setAns = (i, v) => { if (typeof lock !== 'undefined' && lock[i]) return; ans[i] = v; if (v !== null) { const r = $('cfr' + i); r.classList.remove('pend', 'cbad'); $('cfm' + i).innerHTML = ''; } B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.toggle('sel', ans[i] !== null && +x.dataset.v === ans[i])); SFX.play('ok'); pintar(); };
+    let pop = null;
+    const setAns = (i, v) => { if (typeof lock !== 'undefined' && lock[i]) return; pop = null; ans[i] = v; if (v !== null) { const r = $('cfr' + i); r.classList.remove('pend', 'cbad'); $('cfm' + i).innerHTML = ''; } B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.toggle('sel', ans[i] !== null && +x.dataset.v === ans[i])); SFX.play('ok'); pintar(); };
     ov.style.cursor = 'pointer';
-    ov.onclick = e => { if (done) return; const r = ov.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 320, y = (e.clientY - r.top) / r.height * 200; let k = -1, bd = 1e9; it.forEach((o, i) => { const dx = Math.abs(o.x - x); if (dx <= 20 && y >= o.y - 16 && y <= o.y + 55 && dx < bd) { bd = dx; k = i; } }); if (k < 0 || lock[k]) return; setAns(k, ans[k] === null ? 1 : ans[k] === 1 ? 0 : null); };
-    const pintar = () => { ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === null ? '#1565C0' : ans[i] ? '#E65100' : '#2E7D32', ans[i] === null ? '' : ans[i] ? '⚠' : '✔')).join(''); const f = falta(); $('cfOk').textContent = f ? 'Confirmar mis respuestas (faltan ' + f + ')' : 'Confirmar mis respuestas'; $('cfOk').style.opacity = f ? '.6' : '1'; };
+    const popBox = i => { const o = it[i], w = 104, h = 56, x0 = Math.max(4, Math.min(320 - w - 4, o.x - w / 2)), y0 = Math.max(4, o.y - 16 - h); return { x0, y0, w, h, r: { x: x0 + 5, y: y0 + 5, w: w - 10, h: 22 }, n: { x: x0 + 5, y: y0 + 29, w: w - 10, h: 22 } }; };
+    ov.onclick = e => {
+      if (done) return; const r = ov.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * 320, y = (e.clientY - r.top) / r.height * 200;
+      const inn = (q, bx) => x >= bx.x && x <= bx.x + bx.w && y >= bx.y && y <= bx.y + bx.h;
+      if (pop !== null) { const pb = popBox(pop); if (inn(0, pb.r)) return setAns(pop, ans[pop] === 1 ? null : 1); if (inn(0, pb.n)) return setAns(pop, ans[pop] === 0 ? null : 0); if (inn(0, { x: pb.x0, y: pb.y0, w: pb.w, h: pb.h })) return; }
+      let k = -1, bd = 1e9; it.forEach((o, i) => { const dx = Math.abs(o.x - x); if (dx <= 20 && y >= o.y - 16 && y <= o.y + 55 && dx < bd) { bd = dx; k = i; } });
+      if (k < 0 || lock[k]) { pop = null; return pintar(); }
+      pop = pop === k ? null : k; pintar();
+    };
+    const pintar = () => {
+      ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === null ? '#1565C0' : ans[i] ? '#E65100' : '#2E7D32', ans[i] === null ? '' : ans[i] ? '⚠' : '✔')).join('');
+      if (pop !== null) { const o = it[pop], pb = popBox(pop), bt = (bx, t, c, on) => `<rect x="${bx.x}" y="${bx.y}" width="${bx.w}" height="${bx.h}" rx="6" fill="${c}" stroke="${on ? '#FFEB3B' : '#fff'}" stroke-width="${on ? 3 : 1.5}"/><text x="${bx.x + bx.w / 2}" y="${bx.y + 15}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="11.5" fill="#fff">${t}</text>`;
+        ov.insertAdjacentHTML('beforeend', `<g><rect x="${pb.x0}" y="${pb.y0}" width="${pb.w}" height="${pb.h}" rx="9" fill="#111" opacity=".93" stroke="#fff" stroke-width="2"/><path d="M${o.x - 6},${pb.y0 + pb.h} l6,8 l6,-8z" fill="#111"/>${bt(pb.r, '⚠ Es riesgo', '#E65100', ans[pop] === 1)}${bt(pb.n, '✔ No es riesgo', '#2E7D32', ans[pop] === 0)}</g>`); }
+      const f = falta(); $('cfOk').textContent = f ? 'Confirmar mis respuestas (faltan ' + f + ')' : 'Confirmar mis respuestas'; $('cfOk').style.opacity = f ? '.6' : '1'; };
     B.querySelectorAll('.cfa').forEach(b => b.onclick = () => {
       if (done) return; const i = +b.dataset.i, v = +b.dataset.v;
       setAns(i, ans[i] === v ? null : v);
@@ -8828,7 +8843,7 @@ function prepInduccion() {
   const p = RUTA && RUTA.persona, secs = p ? p.secs : null;
   const c = t.learn.find(x => x.puesto);
   if (c) c.x = 'Cada puesto tiene sus riesgos. ' + (secs && secs.length ? 'Los de tu cargo (' + (p.cargo || '') + '):' : 'Los principales en la empresa:') + '<ul>' + (secs && secs.length ? secs : Object.keys(IND_PUESTO)).map(s => IND_PUESTO[s] || '').join('') + IND_TRANSV + '</ul>';
-  const u = t.learn[t.learn.length - 1], emp = p && p.empresa && IND_REGLAMENTOS[p.empresa] ? p.empresa : null;
+  const u = t.learn[t.learn.length - 1], emp = p && p.empresa ? indEmpKey(p.empresa) : null;
   const mano = '<span class="mano">👉</span>';
   const links = (emp ? `<a class="indbtn" target="_blank" rel="noopener" href="${indRiohs(emp)}">${mano}<span>Pincha aquí para leer tu Reglamento Interno<small>${emp}</small></span></a>`
     : '<div class="indtit">👉 Pincha aquí para leer el Reglamento Interno de tu empresa:</div>' + Object.keys(IND_REGLAMENTOS).map(k => `<a class="indbtn" target="_blank" rel="noopener" href="${indRiohs(k)}">📘 ${k}</a>`).join(''))
