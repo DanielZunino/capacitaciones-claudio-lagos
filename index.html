@@ -8290,7 +8290,9 @@ const CLA_SPOTS = {
 // ====== MOTOR: nuevos tipos de pregunta ======
 (() => {
   const st0 = document.createElement('style');
-  st0.textContent = `.actw{position:relative} .actimg{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.25);background:#fff} .actimg svg{display:block;width:100%;height:auto} #actOv{position:absolute;left:0;top:0;width:100%;height:100%;cursor:crosshair;touch-action:manipulation}
+  st0.textContent = `.actw{position:relative} .actimg{position:relative;border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.25);background:#fff} .actimg svg{display:block;width:100%;height:auto}
+.actimg.stk{position:sticky;top:6px;z-index:30;background:#111;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.actimg.stk svg{max-height:36vh;margin:0 auto} #actOv{position:absolute;left:0;top:0;width:100%;height:100%;cursor:crosshair;touch-action:manipulation}
 .actinfo{margin:10px 2px 4px;font-weight:700;font-size:16px;color:#fff;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.actinfo b{background:#C8102E;border-radius:12px;padding:3px 12px}.actpista{background:#FFC20E;color:#111;border:0;border-radius:12px;padding:8px 14px;font-weight:800;font-size:15px}
 .acthint{margin-top:8px;background:#FFF8E1;color:#111;border-radius:12px;padding:10px 12px;font-weight:700;font-size:15px;min-height:20px}
 .ordl{display:flex;flex-direction:column;gap:9px;margin-top:12px}.ordb{position:relative;text-align:left;border:2px solid #fff;background:#1d1d1d;color:#fff;border-radius:14px;padding:13px 14px 13px 52px;font-size:17px;font-weight:700;font-family:inherit;min-height:56px}
@@ -8588,6 +8590,62 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
         if (s.balde === 'b' && a > 18) g += clForbid(270, 80, 20);
         return g;
       }
+    },
+    gata: {
+      go: '▲ LEVANTAR EL CAMIÓN Y TRABAJAR DEBAJO', fac: [
+        { k: 'sost', t: 'Quién sostiene el camión', g: 'Caballetes además de la gata', b: 'Solo la gata', m: 'La gata levanta pero no sostiene: puede perder presión y el camión cae sobre quien está debajo.' },
+        { k: 'calzo', t: 'Ruedas que quedan en el suelo', g: 'Calzos y freno de mano', b: 'Sin calzos', m: 'Sin calzos ni freno de mano el camión puede rodar y salirse de la gata.' },
+        { k: 'motor', t: 'Motor y llave', g: 'Apagado y llave retirada', b: 'Motor encendido', m: 'Con el motor encendido alguien puede mover el camión mientras hay una persona debajo.' },
+        { k: 'piso', t: 'Piso', g: 'Plano y firme', b: 'Tierra suelta', m: 'En tierra suelta la gata se hunde o resbala y el camión se cae.' }],
+      scene: (s, a) => {
+        a = a || 0;
+        const caida = (s.sost === 'b' || s.piso === 'b') && a > 18, rueda = (s.calzo === 'b' || s.motor === 'b') && a > 18 && !caida;
+        const h = Math.min(a, 14) * .8 * (caida ? Math.max(0, 1 - (a - 18) / 3) : 1);
+        const rx = rueda ? (a - 18) * 1.4 : 0, tem = caida && a < 24 ? Math.sin(a * 5) * 1.6 : 0;
+        let g = clTaller();
+        if (s.piso === 'b') g += `<rect y="147" width="320" height="53" fill="#8D6E4A"/>` + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => `<circle cx="${14 + i * 27}" cy="${156 + (i % 3) * 11}" r="${2 + i % 3}" fill="#6D5236"/>`).join('') + clLbl(60, 190, 'Tierra suelta', '#6D4C41', 10);
+        g += `<g transform="translate(${rx + tem},${-h})">${clCamion(14, 136, .8, { LT: 200, exact: true })}</g>`;
+        if (s.sost === 'g') g += [92, 170].map(x => `<rect x="${x - 13}" y="141" width="26" height="6" fill="#FFC20E" stroke="#000"/><rect x="${x - 3}" y="${108 - h}" width="6" height="${33 + h}" fill="#FFC20E" stroke="#000"/><rect x="${x - 10}" y="${104 - h}" width="20" height="5" fill="#FFC20E" stroke="#000"/>`).join('');
+        g += `<rect x="186" y="128" width="34" height="18" fill="#C8102E" stroke="#000"/><rect x="199" y="${104 - h}" width="8" height="${24 + h}" fill="#37474F"/>`;
+        if (s.calzo === 'g') g += `<path d="M262,147 l18,0 l0,-11z" fill="#FFC20E" stroke="#000"/><path d="M8,147 l18,0 l0,-11z" fill="#FFC20E" stroke="#000"/>`;
+        if (s.motor === 'g') g += `<g transform="translate(${rx},${-h})">` + clLbl(236, 66, 'No encender', '#C62828', 9) + `</g>`;
+        else g += [0, 1, 2].map(i => `<circle cx="${244 + i * 5 + rx}" cy="${62 - ((a * .9 + i * 9) % 26) - h}" r="${3 + i * 2}" fill="#9E9E9E" opacity="${(.7 - ((a * .9 + i * 9) % 26) / 50).toFixed(2)}"/>`).join('') + `<g class="an-flash"><circle cx="${250 + rx}" cy="${96 - h}" r="4" fill="#FFF59D"/></g>`;
+        const mx = caida ? 0 : Math.sin(a * .8) * 1.4;
+        g += `<g transform="translate(${mx},${caida ? Math.min(5, (a - 18)) : 0})">${clLying(131, 142)}</g>`;
+        if (caida) g += clFlash(131, 112, 15) + clForbid(272, 100, 18);
+        if (rueda) g += clFlash(30, 120, 12);
+        return g;
+      },
+      fail: () => ''
+    },
+    neumatico: {
+      go: '▶ INFLAR EL NEUMÁTICO', fac: [
+        { k: 'pos', t: 'Dónde se para el trabajador', g: 'Al costado, fuera de la línea del neumático', b: 'Frente a la llanta', m: 'Si el neumático explota, la fuerza sale hacia el frente: nunca te pongas frente a la llanta.' },
+        { k: 'jaula', t: 'Protección', g: 'Jaula y manguera larga', b: 'Sin jaula, manguera corta', m: 'La jaula contiene la llanta si se suelta y la manguera larga te deja a distancia.' },
+        { k: 'aro', t: 'Estado del aro', g: 'Sano y del tamaño correcto', b: 'Oxidado y deformado', m: 'Un aro dañado puede soltarse al inflar: no se infla.' },
+        { k: 'pres', t: 'Presión', g: 'La indicada, por etapas', b: 'Sin medir, a todo', m: 'Nunca más que la presión indicada, y por etapas.' }],
+      scene: (s, a) => {
+        a = a || 0;
+        const k = Math.min(a, 20) / 20, r = 24 + 20 * k, cx = 218, cy = 116, malo = ['pos', 'jaula', 'aro', 'pres'].some(x => s[x] === 'b'), boom = malo && a > 20, t = Math.max(0, a - 20);
+        const front = s.pos === 'b', mx = front ? 146 : 56, golpe = boom && (front || s.jaula === 'b');
+        let g = clTaller();
+        if (!boom) {
+          g += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#2B2D2F" stroke="#000" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${r * .56}" fill="${s.aro === 'b' ? '#8D4A2B' : '#9EA3A8'}" stroke="#000" stroke-width="2"/>`;
+          g += [0, 1, 2, 3, 4, 5, 6, 7].map(i => `<circle cx="${cx + r * .34 * Math.cos(i * Math.PI / 4)}" cy="${cy + r * .34 * Math.sin(i * Math.PI / 4)}" r="2.6" fill="#444"/>`).join('');
+          if (s.aro === 'b') g += `<path d="M${cx - r * .5},${cy - 4} l10,8 l-6,6 l12,8" stroke="#3E1F10" stroke-width="2" fill="none"/>`;
+        } else {
+          g += `<circle cx="${cx}" cy="${cy}" r="${r * .56}" fill="#9EA3A8" stroke="#000" stroke-width="2"/>` + [0, 1, 2, 3, 4, 5].map(i => { const an = i * 1.05 + .3, d = r + t * 9; return `<rect x="${(cx + Math.cos(an) * d).toFixed(1)}" y="${(cy + Math.sin(an) * d - t * 2 + t * t * .6).toFixed(1)}" width="9" height="6" fill="#2B2D2F" stroke="#000" transform="rotate(${(t * 40 + i * 50) % 360} ${cx + Math.cos(an) * d} ${cy + Math.sin(an) * d})"/>`; }).join('') + clFlash(cx, cy, 18 + Math.min(t * 3, 14)) + `<circle cx="${cx}" cy="${cy - 20 - t * 3}" r="${10 + t * 3}" fill="#9E9E9E" opacity=".5"/>`;
+        }
+        if (s.jaula === 'g') g += `<rect x="${cx - 64}" y="48" width="128" height="104" rx="6" fill="none" stroke="#FFC20E" stroke-width="4"/>` + [1, 2, 3, 4, 5].map(i => `<line x1="${cx - 64 + i * 21.3}" y1="48" x2="${cx - 64 + i * 21.3}" y2="152" stroke="#FFC20E" stroke-width="1.5" opacity=".7"/>`).join('') + [1, 2, 3].map(i => `<line x1="${cx - 64}" y1="${48 + i * 26}" x2="${cx + 64}" y2="${48 + i * 26}" stroke="#FFC20E" stroke-width="1.5" opacity=".7"/>`).join('');
+        const sx = golpe ? Math.max(8, mx - t * 7) : mx;
+        g += `<g transform="translate(${sx - mx},${golpe ? Math.min(0, -t * 2) + t * t * .3 : 0}) rotate(${golpe ? -t * 6 : 0} ${mx} 150)">${clMan(mx, 168, { pose: front ? 'bend' : 'point', s: .85 })}</g>`;
+        g += `<path d="M${mx + (front ? 30 : 26)},${front ? 138 : 128} Q${(mx + cx) / 2},${front ? 152 : 176} ${cx - r},${cy + 2}" stroke="#37474F" stroke-width="3" fill="none"/>`;
+        const bar = Math.round(k * (s.pres === 'g' ? 8 : 16));
+        g += `<g transform="translate(262,30)"><circle r="17" fill="#fff" stroke="#000" stroke-width="2"/><path d="M-9,8 A12,12 0 1 1 9,8" fill="none" stroke="#9E9E9E" stroke-width="3"/><line x1="0" y1="0" x2="${(11 * Math.cos((150 + k * (s.pres === 'g' ? 150 : 270)) * Math.PI / 180)).toFixed(1)}" y2="${(11 * Math.sin((150 + k * (s.pres === 'g' ? 150 : 270)) * Math.PI / 180)).toFixed(1)}" stroke="${s.pres === 'g' ? '#2E7D32' : '#C62828'}" stroke-width="2.5"/><text y="30" text-anchor="middle" font-family="Arial" font-weight="900" font-size="11" fill="#263238">${bar} bar</text></g>`;
+        if (boom) g += clForbid(40, 100, 18);
+        return g;
+      },
+      fail: () => ''
     }
   };
   // ---------- simulación de frenado (física simple, tiempos de reacción reales) ----------
@@ -8613,15 +8671,15 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
     window.__trk = 0; g += tr(xF, { driver: true, brake: m.fb }, m.pF || 0, bob);
     if (m.cel) g += `<rect x="${xF + 98}" y="104" width="12" height="18" rx="2" fill="#111" stroke="#fff"/><rect x="${xF + 100}" y="107" width="8" height="11" fill="#80D8FF"/>`;
     if (m.crash) { const cx = xF + 124 + 2; g += `<g><circle cx="${cx}" cy="140" r="${f1c(10 + 14 * Math.min(1, m.crash))}" fill="#FFC20E" opacity="${f1c(1 - m.crash * .6)}"/><circle cx="${cx}" cy="140" r="${f1c(5 + 8 * Math.min(1, m.crash))}" fill="#FF6F00"/>` + [0, 1, 2, 3, 4, 5].map(i => `<rect x="${f1c(cx + Math.cos(i * 1.1) * 30 * m.crash)}" y="${f1c(140 - Math.abs(Math.sin(i * 1.7)) * 34 * m.crash + 40 * m.crash * m.crash)}" width="4" height="3" fill="${i % 2 ? '#9E9E9E' : '#C62828'}"/>`).join('') + `<circle cx="${cx - 6}" cy="${f1c(122 - m.crash * 22)}" r="${f1c(6 + 9 * m.crash)}" fill="#757575" opacity=".55"/></g>`; }
-    g += `<rect x="6" y="6" width="150" height="34" rx="8" fill="#000" opacity=".6"/><text x="12" y="20" font-family="Arial" font-weight="800" font-size="10" fill="#fff">Velocidad: ${Math.round(m.v * 3.6)} km/h</text><text x="12" y="34" font-family="Arial" font-weight="800" font-size="10" fill="#FFC20E">Distancia: ${Math.max(0, Math.round(m.gap))} m</text>`;
-    if (m.msg) g += `<rect x="20" y="52" width="280" height="26" rx="8" fill="#fff" opacity=".95" stroke="${m.col || '#C62828'}" stroke-width="3"/><text x="160" y="70" text-anchor="middle" font-family="Arial" font-weight="900" font-size="13" fill="${m.col || '#C62828'}">${m.msg}</text>`;
+    g += `<rect x="6" y="6" width="196" height="46" rx="8" fill="#000" opacity=".62"/><text x="12" y="20" font-family="Arial" font-weight="800" font-size="10" fill="#fff">Velocidad: ${Math.round(m.v * 3.6)} km/h</text><text x="12" y="32" font-family="Arial" font-weight="800" font-size="9" fill="#fff">Distancia entre los dos camiones:</text><text x="12" y="46" font-family="Arial" font-weight="900" font-size="13" fill="#FFC20E">${Math.max(0, Math.round(m.gap))} m</text>`;
+    if (m.msg) g += `<rect x="20" y="58" width="280" height="26" rx="8" fill="#fff" opacity=".95" stroke="${m.col || '#C62828'}" stroke-width="3"/><text x="160" y="76" text-anchor="middle" font-family="Arial" font-weight="900" font-size="13" fill="${m.col || '#C62828'}">${m.msg}</text>`;
     return sh ? `<g transform="${sh}">${g}</g>` : g;
   };
   function actBuild(q) {
     const C = CFG[q.build], B = $('qBody'), isSim = q.build === 'distancia'; let state = {}, done = false, tries = 0, busy = false, raf = 0;
-    const ICO = { terreno: '⛰️', cables: '⚡', gente: '🧍', conos: '🔶', balde: '🪣', vel: '⏱️', alarma: '🔔', dist: '📏', cel: '📱', luz: '💡' };
+    const ICO = { terreno: '⛰️', cables: '⚡', gente: '🧍', conos: '🔶', balde: '🪣', vel: '⏱️', alarma: '🔔', dist: '📏', cel: '📱', luz: '💡', sost: '🏗️', calzo: '🧱', motor: '🔑', piso: '⛰️', pos: '🧍', jaula: '🛡️', aro: '⭕', pres: '🔧' };
     const order = C.fac.map(() => Math.random() < .5);
-    const QS = { distancia: { dist: '¿A qué distancia debo ir del camión de adelante?', vel: '¿A qué velocidad debo ir?', cel: '¿En qué condición de atención debo ir?', luz: '¿Cómo deben ir las luces del camión?' }, batea: { terreno: '¿Cómo debe ser el terreno donde descargo?', cables: '¿Qué debe haber hacia arriba, sobre la batea?', gente: '¿Quién puede estar detrás del camión al descargar?', conos: '¿Cómo debe estar la zona de descarga?' }, cargador: { balde: '¿A qué altura debo llevar el balde?', gente: '¿Dónde debe estar el trabajador que va a pie?', vel: '¿A qué velocidad debo mover el cargador?', alarma: '¿Cómo deben ir las señales del cargador?' } };
+    const QS = { distancia: { dist: '¿A qué distancia debo ir del camión de adelante?', vel: '¿A qué velocidad debo ir?', cel: '¿En qué condición de atención debo ir?', luz: '¿Cómo deben ir las luces del camión?' }, batea: { terreno: '¿Cómo debe ser el terreno donde descargo?', cables: '¿Qué debe haber hacia arriba, sobre la batea?', gente: '¿Quién puede estar detrás del camión al descargar?', conos: '¿Cómo debe estar la zona de descarga?' }, cargador: { balde: '¿A qué altura debo llevar el balde?', gente: '¿Dónde debe estar el trabajador que va a pie?', vel: '¿A qué velocidad debo mover el cargador?', alarma: '¿Cómo deben ir las señales del cargador?' }, gata: { sost: '¿Qué sostiene el camión mientras trabajo debajo?', calzo: '¿Qué debo hacer con las ruedas que quedan en el suelo?', motor: '¿Cómo debe estar el motor?', piso: '¿Cómo debe ser el piso donde levanto?' }, neumatico: { pos: '¿Dónde me paro al inflar?', jaula: '¿Con qué protección inflo?', aro: '¿En qué estado debe estar el aro?', pres: '¿Cuánto inflo?' } };
     const view = () => { const v = {}; C.fac.forEach(f => v[f.k] = state[f.k] || 'g'); return v; };
     let prevRaf = 0, simRun = false, prevX = 0;
     const startPrev = () => {
@@ -8636,7 +8694,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
     };
     const draw = (a) => { if (isSim) return startPrev(); window.__trk = 0; const sv_ = view(); $('bldS').innerHTML = C.scene(sv_, a) + C.fail(sv_, a); };
     const falta = () => C.fac.filter(f => !state[f.k]).length;
-    B.innerHTML = `<div class="actimg"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH"><b>Cómo se hace:</b><br>① En cada recuadro, toque la opción <b>CORRECTA</b> (la más segura).<br>② Cuando las ${C.fac.length} estén elegidas, toque el botón rojo.<br><i>Si se equivoca, toque otra opción para reemplazarla, o toque la misma para quitarla. Puede cambiar antes de pulsar el botón rojo.</i></div>` +
+    B.innerHTML = `<div class="actimg stk"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH"><b>Cómo se hace:</b><br>① En cada recuadro, toque la opción <b>CORRECTA</b> (la más segura).<br>② Cuando las ${C.fac.length} estén elegidas, toque el botón rojo.<br><i>Si se equivoca, toque otra opción para reemplazarla, o toque la misma para quitarla. Puede cambiar antes de pulsar el botón rojo.</i></div>` +
       C.fac.map((f, i) => { const o = order[i] ? [['g', f.g], ['b', f.b]] : [['b', f.b], ['g', f.g]]; return `<div class="bfac" data-k="${f.k}"><div class="bft"><span class="cfn">${i + 1}</span><span>${ICO[f.k] || ''} ${f.t}</span></div><div class="bfq">${(QS[q.build] || {})[f.k] || '¿Cuál es lo correcto?'}</div><div class="bfb">${o.map(([v, tx]) => `<button class="mb bo" data-v="${v}"><span class="bok">✔</span>${tx}</button>`).join('')}</div></div>`; }).join('') +
       `<button class="simbtn" id="bldB" style="opacity:.55">Elija las ${C.fac.length} condiciones (faltan ${C.fac.length})</button>`;
     draw(0);
@@ -8646,15 +8704,38 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       if (state[k] === b.dataset.v) { delete state[k]; b.classList.remove('sel'); } else { r.querySelectorAll('.mb').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); state[k] = b.dataset.v; }
       r.classList.toggle('hecho', !!state[k]); draw(0); refrescar(); try { SFX.play('ok'); } catch (e) {}
     }));
+    let repl = false;
+    const finRepetir = () => { repl = false; simRun = false; const rb = $('bldR'); if (rb) { rb.disabled = false; rb.textContent = '🔁 Ver de nuevo la maniobra'; } };
+    const agregarRepetir = () => {
+      const rb = document.createElement('button'); rb.id = 'bldR'; rb.textContent = '🔁 Ver de nuevo la maniobra';
+      rb.style.cssText = 'display:block;width:100%;margin-top:12px;padding:15px;border:0;border-radius:12px;background:#1565C0;color:#fff;font:800 16px Arial;cursor:pointer';
+      $('qFb').appendChild(rb);
+      rb.onclick = () => {
+        if (repl) return; repl = true; rb.disabled = true; rb.textContent = '▶ Mire la maniobra…';
+        try { $('bldS').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+        if (isSim) return correrSim([], true);
+        try { SFX.play(q.build === 'batea' || q.build === 'gata' ? 'descarga' : 'cargador'); } catch (e) {}
+        const t1 = performance.now(), st1 = ts => { const a1 = Math.min(30, (ts - t1) / 25); draw(a1); if (a1 < 30) return requestAnimationFrame(st1); setTimeout(finRepetir, 400); };
+        requestAnimationFrame(st1);
+      };
+    };
     const terminarIntento = (bad, choco) => {
-      if (!bad.length && !choco) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> ' + (isSim ? 'Frenó a tiempo y quedó a distancia segura.' : 'Maniobra segura: terreno, entorno y personas controlados.') + '<br>👇 Toque <b>Avanzar</b> para continuar con la siguiente pregunta.'; try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
+      if (!bad.length && !choco) {
+        done = true; const okMsg = '✔ <b>¡Excelente!</b> ' + (isSim ? 'Frenó a tiempo y quedó a distancia segura.' : 'Maniobra segura: terreno, entorno y personas controlados.');
+        $('bldH').innerHTML = okMsg + '<br><i>Mire cómo queda la maniobra…</i>'; try { SFX.play('ok'); } catch (e) {}
+        try { $('bldS').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {}
+        return setTimeout(() => {
+          $('bldH').innerHTML = okMsg + '<br>👇 Toque <b>Avanzar</b> para continuar, o vea otra vez la maniobra.';
+          answer(dummy(), true); agregarRepetir();
+        }, 2800);
+      }
       $('bldH').innerHTML = '✖ <b>' + (isSim ? '¡Choque!' : 'Maniobra insegura.') + '</b> ' + bad.map(f => f.m).join(' ');
       try { SFX.play('bad'); } catch (e) {}
       if (tries >= 3) { done = true; $('bldH').innerHTML += ' <br>La condición segura era: ' + C.fac.map(f => f.g).join(' · ') + '.'; return setTimeout(() => answer(dummy(), false), 1800); }
       $('bldH').innerHTML += '<br><b>Cambie las opciones que están mal y vuelva a probar</b> (le quedan ' + (3 - tries) + ' intentos).';
       setTimeout(() => { busy = false; simRun = false; draw(0); try { $('bldH').scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (e) {} }, 2200);
     };
-    const correrSim = (bad) => {
+    const correrSim = (bad, esRep) => {
       simRun = true; cancelAnimationFrame(prevRaf); prevRaf = 0;
       const sv_ = view(), v0 = sv_.vel === 'g' ? SIM.vG : SIM.vB, gap0 = sv_.dist === 'g' ? SIM.gG : SIM.gB, rx = SIM.rBase + (sv_.cel === 'b' ? SIM.rCel : 0) + (sv_.luz === 'b' ? SIM.rLuz : 0);
       let xl = gap0, xf = 0, vl = v0, vf = v0, tBr = 1.6, t = 0, last = performance.now(), crash = 0, choco = false, fSound = false, fb = false, end = 0, shake = 0, vfI = 0;
@@ -8677,7 +8758,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
         const m = { X: xf, gap, v: vf, lb: lBrake && vl >= 0, fb: fBrake && vf > 0.01, pL: lBrake && vl > 0 ? 1.3 : 0, pF: fBrake && vf > 0 && !choco ? 1.5 : 0, pushL: choco ? Math.min(14, (crash) * 10) : 0, pushF: choco ? -Math.min(4, crash * 3) : 0, crash: choco ? crash : 0, shake: shake > 0, msg, col, cel: sv_.cel === 'b' };
         window.__trk = 0; $('bldS').innerHTML = simScene(sv_, m);
         const parado = vf <= .01 && vl <= .01 && t > tBr + .5;
-        if (parado) { if (!end) end = t; if (t - end > 1.2) return terminarIntento(bad, choco); }
+        if (parado) { if (!end) end = t; if (t - end > 1.2) return esRep ? finRepetir() : terminarIntento(bad, choco); }
         raf = requestAnimationFrame(frame);
       };
       raf = requestAnimationFrame(frame);
@@ -8690,7 +8771,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       const bad = C.fac.filter(f => state[f.k] === 'b');
       if (isSim) return correrSim(bad);
       let a = 0; const t0 = performance.now();
-      try { SFX.play(q.build === 'batea' ? 'descarga' : 'cargador'); } catch (e) {}
+      try { SFX.play(q.build === 'batea' || q.build === 'gata' ? 'descarga' : 'cargador'); } catch (e) {}
       const step = ts => {
         a = Math.min(30, (ts - t0) / 25); draw(a);
         if (a < 30) return requestAnimationFrame(step);
@@ -8710,6 +8791,8 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   const ind = T('induccion'); if (ind) ind.quiz.splice(Math.min(4, ind.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y descargue la batea', build: 'batea', w: 'Terreno plano, sin cables, nadie detrás y zona señalizada.' });
   const ct = T('cl_caminos'); if (ct) ct.quiz.splice(Math.min(3, ct.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y frene el camión de adelante', build: 'distancia', w: 'Distancia de 3 segundos o más, velocidad moderada, atención en el camino y luces encendidas.' });
   const ind2 = T('induccion'); if (ind2) ind2.quiz.splice(Math.min(6, ind2.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y frene el camión de adelante', build: 'distancia', w: 'Distancia de 3 segundos o más, velocidad moderada, atención en el camino y luces encendidas.' });
+  const tg = T('cl_gatas'); if (tg) tg.quiz.splice(Math.min(3, tg.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario y levante el camión para trabajar debajo', build: 'gata', w: 'Caballetes además de la gata, calzos y freno de mano, motor apagado con la llave retirada y piso plano y firme.' });
+  const tn = T('cl_neumaticos'); if (tn) tn.quiz.splice(Math.min(3, tn.quiz.length), 0, { q: 'Ejercicio práctico: arme el escenario e infle el neumático del camión', build: 'neumatico', w: 'Al costado, con jaula y manguera larga, con el aro sano y a la presión indicada, por etapas.' });
 })();
 
 // ===== Transportes Claudio Lagos: temas por sección, "Mi ruta" según el cargo, empresa y obra =====
