@@ -308,6 +308,13 @@ const SFX = (() => {
     altura:   () => { tone(1400,0,1.1,'sine',.16,300); noise(1.05,.25,.3,'lowpass',400); },
     uv:       () => { [1047,1319,1568,2093].forEach((f,i)=>tone(f,i*.09,.5,'sine',.1)); },
     autocuidado:() => { [0,.28,1,1.28].forEach(t=>tone(70,t,.18,'sine',.5,50)); },
+    descarga: () => { tone(80,0,1.4,'sawtooth',.14,170); noise(.2,.5,.12,'bandpass',900,500); noise(1.0,1.8,.3,'bandpass',1800,700); noise(1.0,1.8,.18,'lowpass',500); tone(60,1.0,1.6,'sine',.25,45); },
+    cargador: () => { tone(70,0,1.6,'sawtooth',.14,95); noise(0,1.6,.08,'lowpass',400); for(let i=0;i<4;i++) tone(1000,.3+i*.4,.2,'square',.1); },
+    motor:    () => { tone(65,0,1.2,'sawtooth',.12,95); noise(0,1.2,.07,'lowpass',350); },
+    bocina:   () => { tone(420,0,.45,'sawtooth',.16); tone(525,0,.45,'sawtooth',.14); },
+    freno:    () => { noise(0,2.2,.3,'bandpass',3200,700); tone(1100,0,1.8,'sawtooth',.06,350); tone(75,0,2.2,'sine',.2,40); },
+    choque:   () => { noise(0,.9,.6,'lowpass',1800,150); tone(110,0,.7,'sine',.6,35); noise(.05,.6,.35,'highpass',3500); tone(300,.1,.25,'square',.15,90);
+      try { const ss = window.speechSynthesis; if (ss && !muted) { ss.cancel(); const u = new SpeechSynthesisUtterance('¡Cuidado!'); u.lang = 'es-CL'; u.rate = 1.25; u.pitch = 1.2; ss.speak(u); } } catch (e) {} },
     ok:       () => { tone(660,0,.12,'sine',.25); tone(990,.12,.22,'sine',.25); },
     bad:      () => { tone(200,0,.3,'sawtooth',.12,140); },
     next:     () => { tone(880,0,.05,'sine',.08); },
@@ -8259,12 +8266,19 @@ S.cla_carg_errores = () => sv(clAcopio({ sun: false }) + `<circle cx="116" cy="1
 // ---------- INSPECCIÓN DEL CAMIÓN ----------
 S.cla_insp = () => sv(clRoad({ sun: false }) + clCamion(26, 172, .8, { driver: false }) + `<ellipse cx="60" cy="163" rx="14" ry="9" fill="#2B2D2F" stroke="#000" stroke-width="1.4"/>` + `<rect x="186" y="124" width="9" height="9" rx="2" fill="#555" stroke="#000"/><path d="M182,172 q2,8 0,14" stroke="#111" stroke-width="3" fill="none"><animate attributeName="stroke-opacity" values="1;.2;1" dur="1.2s" repeatCount="indefinite"/></path><ellipse cx="182" cy="188" rx="9" ry="3" fill="#111" opacity=".7"/>` + `<rect x="34" y="143" width="5" height="9" fill="#555"/><rect x="150" y="91" width="5" height="14" fill="#111" transform="rotate(25 152 98)"/>` + clLbl(160, 22, 'Revisión antes de salir: toca 4 problemas', '#263238', 12));
 // ---------- INDUCCIÓN: faena ----------
-S.cla_ind_faena = () => sv(clAcopio() + clMan(34, 176, { pose: 'stand', s: .62 }) + `<rect x="46" y="126" width="11" height="18" rx="2" fill="#263238" stroke="#000"/><rect x="48" y="128" width="7" height="10" fill="#80D8FF"/>` + W(88, 176, { pose: 'stand', s: .62, vest: false, helmet: false, shirt: '#455A64' }) + clCargador(120, 176, .9, { driver: true, load: true, lift: 18 }) + clLbl(160, 28, 'Toca los 3 riesgos de la faena', '#C62828', 13));
+S.cla_ind_faena = () => sv(clAcopio() + clMan(24, 186, { pose: 'stand', vest: false, helmet: false, shirt: '#455A64' }) + clMan(66, 186, { pose: 'carry' }) + '<rect x="72" y="158" width="7" height="12" rx="2" fill="#263238" stroke="#000"/><rect x="73.3" y="160" width="4.4" height="8" fill="#80D8FF"/>' + clMan(108, 186, { pose: 'stand' }) + clCone(130, 186) + clCargador(172, 178, .66, { driver: true, load: true, lift: 18 }) + clMan(302, 190, { pose: 'stand' }));
 const CLA_SPOTS = {
   cla_bat_errores: [{ x: 50, y: 142, r: 26, l: 'Persona detrás de la batea' }, { x: 118, y: 40, r: 26, l: 'Cables sobre la batea' }, { x: 86, y: 166, r: 22, l: 'Piedra bajo la rueda: terreno inestable' }],
   cla_carg_errores: [{ x: 52, y: 140, r: 24, l: 'Persona en el punto ciego' }, { x: 205, y: 100, r: 22, l: 'Balde levantado al desplazarse' }, { x: 252, y: 98, r: 18, l: 'Persona subida al acopio' }],
   cla_insp: [{ x: 60, y: 162, r: 24, l: 'Neumático desinflado' }, { x: 182, y: 180, r: 22, l: 'Fuga de aceite' }, { x: 28, y: 138, r: 20, l: 'Luz trasera rota' }, { x: 153, y: 98, r: 20, l: 'Espejo suelto' }],
-  cla_ind_faena: [{ x: 183, y: 111, r: 12, d: true, m: 'el operador va en cabina, con cinturón y atento: así debe estar.' }, { x: 33, y: 157, r: 17, d: true, m: 'este trabajador lleva casco y chaleco reflectante: está bien protegido.' }, { x: 88, y: 156, r: 20, l: 'Persona sin casco ni chaleco', m: 'en la faena todos usan casco y chaleco reflectante, siempre.' }, { x: 52, y: 135, r: 15, l: 'Uso del celular en la faena', m: 'el celular distrae: no se usa caminando cerca de maquinaria.' }, { x: 205, y: 140, r: 38, l: 'Cargador en movimiento con gente cerca', m: 'nadie debe estar en el radio de giro ni en el punto ciego del cargador.' }]
+  cla_ind_faena: [
+    { x: 240, y: 110, t: 'El operador va dentro de la cabina, con cinturón y atento', risk: false, m: 'Está bien: el operador va en cabina, con cinturón y atento.' },
+    { x: 24, y: 138, t: 'Persona de azul, sin casco ni chaleco reflectante', risk: true, m: 'Es riesgo: sin casco ni chaleco no la ven y queda sin protección.' },
+    { x: 66, y: 138, t: 'Trabajador mirando su celular', risk: true, m: 'Es riesgo: con el celular se distrae. En la faena no se usa.' },
+    { x: 108, y: 138, t: 'Trabajador con casco y chaleco, lejos del cargador', risk: false, m: 'Está bien: usa su protección y está a buena distancia de la máquina.' },
+    { x: 130, y: 152, t: 'Cono de señalización en el suelo', risk: false, m: 'Está bien: el cono marca y delimita la zona.' },
+    { x: 302, y: 140, t: 'Trabajador con casco y chaleco, parado pegado al cargador', risk: true, m: 'Es riesgo: está en el punto ciego y en el radio de giro. Nadie debe estar cerca de la máquina en movimiento.' }
+  ],
 };
 
 // ====== MOTOR: nuevos tipos de pregunta ======
@@ -8278,6 +8292,8 @@ const CLA_SPOTS = {
 .ordb.ok{background:#1B5E20;border-color:#7CFC8A}.ordb.ok .n{background:#2E7D32}.ordb.bad{animation:anShake .45s;background:#7F1D1D;border-color:#FF8A80}
 .mcol{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.mb{border:2px solid #fff;background:#1d1d1d;color:#fff;border-radius:14px;padding:12px 10px;font-size:15px;font-weight:700;font-family:inherit;min-height:64px;text-align:center}.mb.sel{background:#C8102E;border-color:#FFC20E}.mb.ok{background:#1B5E20;border-color:#7CFC8A}.mb.bad{animation:anShake .45s;background:#7F1D1D}
 .simbtn{display:block;width:100%;margin-top:12px;border:0;border-radius:16px;background:#C8102E;color:#fff;font-size:22px;font-weight:900;padding:18px 10px;box-shadow:0 4px 0 #7a0a1d}.simbtn:active{transform:translateY(3px);box-shadow:none}
+.cfl{display:flex;flex-direction:column;gap:10px;margin-top:10px}.cfr{background:#1d1d1d;border:2px solid #555;border-radius:14px;padding:10px}.cfr.cok{border-color:#7CFC8A;background:#12301a}.cfr.cbad{border-color:#FF8A80;background:#3a1414}.cft{display:flex;gap:10px;align-items:center;color:#fff;font-weight:700;font-size:16px;line-height:1.25}.cfn{flex:none;width:30px;height:30px;border-radius:50%;background:#1565C0;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:900}.cfb{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cfa{border:2px solid #fff;background:#2a2a2a;color:#fff;border-radius:12px;padding:12px 6px;font-size:16px;font-weight:800;font-family:inherit;min-height:50px}.cfa.sel{background:#C8102E;border-color:#FFC20E}.cfa.good{outline:3px solid #7CFC8A}.cfm{color:#fff;font-size:15px;margin-top:8px;line-height:1.3}.cfm:empty{display:none}
+.bfac{margin-top:10px;background:#1d1d1d;border:2px solid #555;border-radius:14px;padding:10px}.bfac.hecho{border-color:#7CFC8A}.bfac.falta{border-color:#FFC20E;animation:anShake .45s}.bft{display:flex;gap:10px;align-items:center;color:#fff;font-weight:800;font-size:17px}.bfq{color:#FFC20E;font-size:14px;font-weight:700;margin:6px 0 7px 2px}.bfb{display:grid;grid-template-columns:1fr 1fr;gap:9px}.bo{position:relative;font-size:16px;min-height:62px}.bo .bok{display:none}.bo.sel{background:#1B5E20;border-color:#7CFC8A}.bo.sel .bok{display:inline-block;margin-right:6px;color:#7CFC8A;font-weight:900}
 svg{filter:saturate(1.28) contrast(1.04)}`;
   document.head.appendChild(st0);
   const dummy = () => document.createElement('button');
@@ -8289,8 +8305,33 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
     leer([$('qTxt')]); sesGuardar('quiz');
   };
   const barajar = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[b[i], b[j]] = [b[j], b[i]]; } return b; };
+  // ---- A2) marcar cada situación: "Es riesgo" / "Está bien", se puede cambiar y luego se confirma
+  function actConf(q) {
+    const it = CLA_SPOTS[q.hot], B = $('qBody'), ans = it.map(() => null); let done = false;
+    const num = (x, y, n, c, t) => `<g><circle cx="${x}" cy="${y}" r="8.5" fill="${c}" stroke="#fff" stroke-width="2"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-family="Arial" font-weight="900" font-size="11" fill="#fff">${t || n}</text></g>`;
+    B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg" style="cursor:default">${it.map((o, i) => num(o.x, o.y, i + 1, '#1565C0')).join('')}</svg></div></div><div class="acthint" id="aH">Mire cada número de la imagen y elija: <b>Es riesgo</b> o <b>Está bien</b>. Puede cambiar su respuesta antes de confirmar.</div><div class="cfl">${it.map((o, i) => `<div class="cfr" id="cfr${i}"><div class="cft"><span class="cfn">${i + 1}</span><span>${o.t}</span></div><div class="cfb"><button class="cfa" data-i="${i}" data-v="1">⚠ Es riesgo</button><button class="cfa" data-i="${i}" data-v="0">✔ Está bien</button></div><div class="cfm" id="cfm${i}"></div></div>`).join('')}</div><button class="simbtn" id="cfOk">Confirmar mis respuestas</button>`;
+    const ov = $('actOv'), falta = () => ans.filter(a => a === null).length;
+    const pintar = () => { ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === null ? '#1565C0' : ans[i] ? '#E65100' : '#2E7D32')).join(''); const f = falta(); $('cfOk').textContent = f ? 'Confirmar mis respuestas (faltan ' + f + ')' : 'Confirmar mis respuestas'; $('cfOk').style.opacity = f ? '.6' : '1'; };
+    B.querySelectorAll('.cfa').forEach(b => b.onclick = () => {
+      if (done) return; const i = +b.dataset.i, v = +b.dataset.v;
+      ans[i] = ans[i] === v ? null : v;
+      B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => x.classList.toggle('sel', ans[i] !== null && +x.dataset.v === ans[i]));
+      SFX.play('ok'); pintar();
+    });
+    $('cfOk').onclick = () => {
+      if (done) return; const f = falta();
+      if (f) { $('aH').innerHTML = '⚠ Le faltan <b>' + f + '</b> por responder. Elija una opción en cada número.'; SFX.play('bad'); return; }
+      done = true; let bien = 0;
+      it.forEach((o, i) => { const ok = ans[i] === (o.risk ? 1 : 0); if (ok) bien++; $('cfr' + i).classList.add(ok ? 'cok' : 'cbad'); $('cfm' + i).innerHTML = (ok ? '✅ <b>Correcto.</b> ' : '❌ <b>Incorrecto.</b> ') + o.m; B.querySelectorAll('.cfa[data-i="' + i + '"]').forEach(x => { x.disabled = true; if (+x.dataset.v === (o.risk ? 1 : 0)) x.classList.add('good'); }); });
+      ov.innerHTML = it.map((o, i) => num(o.x, o.y, i + 1, ans[i] === (o.risk ? 1 : 0) ? '#2E7D32' : '#C62828', ans[i] === (o.risk ? 1 : 0) ? '✔' : '✖')).join('');
+      $('cfOk').style.display = 'none'; $('aH').innerHTML = '<b>' + bien + ' de ' + it.length + ' respuestas correctas.</b>';
+      fin(bien === it.length);
+    };
+    pintar(); encabezado(q, ' Mire la imagen y, en cada número, elija si es un riesgo o si está bien.');
+  }
   // ---- A) tocar los peligros / errores
   function actHot(q) {
+    if (q.conf) return actConf(q);
     const spots = CLA_SPOTS[q.hot] || q.spots || [], tot = spots.filter(p => !p.d).length, B = $('qBody');
     B.innerHTML = `<div class="actw"><div class="actimg">${S[q.hot]()}<svg id="actOv" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="actinfo"><span>Encontrados: <b id="aF">0 de ${tot}</b></span><button class="actpista" id="aP">💡 Pista</button></div><div class="acthint" id="aH">Toca sobre la imagen donde veas un peligro o un error.</div></div>`;
     const ov = $('actOv'); let found = 0, miss = 0, done = false; const hit = new Set();
@@ -8408,7 +8449,7 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
   const ind = T('induccion');
   if (ind) {
     ind.learn.splice(1, 0, L('cla_ind_faena', 'Riesgos que verás en la faena', 'Mira la imagen con ojo de prevencionista. En tu trabajo verás estas situaciones: <b>personas sin EPP</b>, <b>uso del celular</b>, <b>gente cerca del cargador</b>. Reconocerlas a tiempo es el primer paso del autocuidado.', 'Reconocer el riesgo es el primer paso.'));
-    ind.quiz.splice(1, 0, { q: 'Actividad: toque los 3 riesgos que ve en la faena', hot: 'cla_ind_faena', w: 'Riesgos: persona sin casco ni chaleco, uso del celular en la faena y gente cerca del cargador en movimiento.' });
+    ind.quiz.splice(1, 0, { q: 'Actividad: marque cuáles de estas situaciones de la faena son un riesgo', hot: 'cla_ind_faena', conf: true, w: 'Los 3 riesgos eran: persona sin casco ni chaleco, uso del celular y trabajador pegado al cargador en movimiento.' });
     ind.learn.splice(3, 0, L('cla_bat_ok', 'Batea: levantarla de forma SEGURA', '<ul><li>Terreno <b>plano, firme y estable</b>.</li><li>Nadie detrás ni al costado; <b>sin cables</b> encima.</li><li><b>Freno de mano</b> puesto y levantar <b>despacio</b>.</li></ul>', 'Plano, despejado, freno y lento.'), L('cla_bat_pend', 'Batea: levantarla de forma INSEGURA', 'En una <b>pendiente</b> o suelo blando el camión puede <b>volcar</b> con la batea arriba. Tampoco se levanta con gente detrás ni bajo cables eléctricos.', 'Pendiente o suelo blando: no se levanta.'));
     ind.quiz.splice(2, 0, _clPick('¿Qué camión levanta la batea de forma segura?', ['cla_bat_pend', 'cla_bat_ok'], 1, 'En terreno plano y despejado. En pendiente el camión puede volcar.'));
     ind.quiz.push({ q: 'Actividad: ordene lo que debe hacer ante un accidente', ord: ['Aviso de inmediato a mi jefatura', 'Pido atención en la mutualidad', 'Se registra y se investiga el accidente', 'Vuelvo a trabajar según indicación médica'], w: 'Avisar de inmediato, atenderse en la mutualidad, dejar registro e investigar, y retomar según indicación médica.' });
@@ -8521,35 +8562,103 @@ svg{filter:saturate(1.28) contrast(1.04)}`;
       }
     }
   };
+  // ---------- simulación de frenado (física simple, tiempos de reacción reales) ----------
+  const SIM = { vG: 16.67, vB: 25, gG: 50, gB: 8, aL: 8, aF: 4, rBase: 1, rCel: 1.8, rLuz: 1.5 };
+  const simScene = (S0, m) => {
+    const X = m.X || 0, gapU = Math.max(0, m.gap) * 1.08, xF = 8 + (m.pushF || 0), xL = 8 + 124 + gapU + (m.pushL || 0);
+    const mod = (v, n) => ((v % n) + n) % n, sh = m.shake ? `translate(${(Math.random() - .5) * 5},${(Math.random() - .5) * 4})` : '';
+    let g = `<defs><linearGradient id="dsk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F80ED"/><stop offset="1" stop-color="#D6ECFF"/></linearGradient></defs><rect width="320" height="150" fill="url(#dsk)"/>`;
+    g += `<circle cx="268" cy="34" r="17" fill="#FFD54F"/><circle cx="268" cy="34" r="25" fill="#FFD54F" opacity=".25"/>`;
+    const cl = (x, y, k) => `<g transform="translate(${x},${y}) scale(${k})" fill="#fff"><ellipse cx="0" cy="0" rx="24" ry="8"/><ellipse cx="12" cy="-6" rx="14" ry="9"/><ellipse cx="-10" cy="-4" rx="10" ry="7"/></g>`;
+    const co = mod(X * .35, 420);
+    for (let k = 0; k < 2; k++) g += cl(60 - co + 420 * k, 30, 1.1) + cl(210 - co + 420 * k, 52, .8) + cl(330 - co + 420 * k, 22, .9);
+    const hill = (off, col, d) => { const o = mod(X * off, 320); return [0, 1].map(k => `<path transform="translate(${-o + 320 * k},0)" d="${d}" fill="${col}"/>`).join(''); };
+    g += hill(.9, '#7BAE5B', 'M0,118 q60,-26 120,-6 q70,20 130,-8 q40,-14 70,-2 V152 H0z');
+    g += hill(2.4, '#4F7A34', 'M0,134 q80,-16 160,0 q80,14 160,-4 V152 H0z');
+    g += `<rect y="150" width="320" height="50" fill="#4A4F55"/><rect y="150" width="320" height="3" fill="#ECEFF1"/><rect y="196" width="320" height="4" fill="#ECEFF1"/>`;
+    const po = mod(X * 13, 110);
+    for (let k = -1; k < 4; k++) { const px = k * 110 - po + 110; g += `<rect x="${px}" y="138" width="4" height="14" fill="#fff"/><rect x="${px}" y="138" width="4" height="4" fill="#D7262B"/>`; }
+    g += `<line x1="0" y1="176" x2="320" y2="176" stroke="#FFC20E" stroke-width="3" stroke-dasharray="22 16" stroke-dashoffset="${f1c(mod(X * 7, 38))}"/>`;
+    const tr = (x, o, pit, bob) => `<g transform="translate(0,${f1c(bob)}) rotate(${f1c(pit)} ${x + 62} 172)">${clCamion(x, 172, .4, Object.assign({ exact: true }, o))}</g>`;
+    const bob = m.v > .5 ? Math.sin(X * 2.2) * .5 : 0;
+    window.__trk = 0; g += tr(xL, { brake: m.lb }, m.pL || 0, bob * .8);
+    window.__trk = 0; g += tr(xF, { driver: true, brake: m.fb }, m.pF || 0, bob);
+    if (m.cel) g += `<rect x="${xF + 98}" y="104" width="12" height="18" rx="2" fill="#111" stroke="#fff"/><rect x="${xF + 100}" y="107" width="8" height="11" fill="#80D8FF"/>`;
+    if (m.crash) { const cx = xF + 124 + 2; g += `<g><circle cx="${cx}" cy="140" r="${f1c(10 + 14 * Math.min(1, m.crash))}" fill="#FFC20E" opacity="${f1c(1 - m.crash * .6)}"/><circle cx="${cx}" cy="140" r="${f1c(5 + 8 * Math.min(1, m.crash))}" fill="#FF6F00"/>` + [0, 1, 2, 3, 4, 5].map(i => `<rect x="${f1c(cx + Math.cos(i * 1.1) * 30 * m.crash)}" y="${f1c(140 - Math.abs(Math.sin(i * 1.7)) * 34 * m.crash + 40 * m.crash * m.crash)}" width="4" height="3" fill="${i % 2 ? '#9E9E9E' : '#C62828'}"/>`).join('') + `<circle cx="${cx - 6}" cy="${f1c(122 - m.crash * 22)}" r="${f1c(6 + 9 * m.crash)}" fill="#757575" opacity=".55"/></g>`; }
+    g += `<rect x="6" y="6" width="150" height="34" rx="8" fill="#000" opacity=".6"/><text x="12" y="20" font-family="Arial" font-weight="800" font-size="10" fill="#fff">Velocidad: ${Math.round(m.v * 3.6)} km/h</text><text x="12" y="34" font-family="Arial" font-weight="800" font-size="10" fill="#FFC20E">Distancia: ${Math.max(0, Math.round(m.gap))} m</text>`;
+    if (m.msg) g += `<rect x="20" y="52" width="280" height="26" rx="8" fill="#fff" opacity=".95" stroke="${m.col || '#C62828'}" stroke-width="3"/><text x="160" y="70" text-anchor="middle" font-family="Arial" font-weight="900" font-size="13" fill="${m.col || '#C62828'}">${m.msg}</text>`;
+    return sh ? `<g transform="${sh}">${g}</g>` : g;
+  };
   function actBuild(q) {
-    const C = CFG[q.build], B = $('qBody'); let state = {}, done = false, tries = 0, busy = false;
-    C.fac.forEach(f => state[f.k] = 'b');
-    const order = C.fac.map(f => Math.random() < .5);
-    const draw = (a) => { window.__trk = 0; $('bldS').innerHTML = C.scene(state, a) + C.fail(state, a); };
-    B.innerHTML = `<div class="actimg"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH">Elija en cada fila la condición correcta y luego ejecute la maniobra.</div>` +
-      C.fac.map((f, i) => { const o = order[i] ? [['g', f.g], ['b', f.b]] : [['b', f.b], ['g', f.g]]; return `<div style="margin-top:10px;color:#fff;font-weight:800;font-size:14px;letter-spacing:.5px">${f.t.toUpperCase()}</div><div class="mcol" style="margin-top:4px" data-k="${f.k}">${o.map(([v, tx]) => `<button class="mb" data-v="${v}">${tx}</button>`).join('')}</div>`; }).join('') +
-      `<button class="simbtn" id="bldB">${C.go}</button>`;
+    const C = CFG[q.build], B = $('qBody'), isSim = q.build === 'distancia'; let state = {}, done = false, tries = 0, busy = false, raf = 0;
+    const ICO = { terreno: '⛰️', cables: '⚡', gente: '🧍', conos: '🔶', balde: '🪣', vel: '⏱️', alarma: '🔔', dist: '📏', cel: '📱', luz: '💡' };
+    const order = C.fac.map(() => Math.random() < .5);
+    const QS = { distancia: { dist: '¿A qué distancia debo ir del camión de adelante?', vel: '¿A qué velocidad debo ir?', cel: '¿En qué condición de atención debo ir?', luz: '¿Cómo deben ir las luces del camión?' }, batea: { terreno: '¿Cómo debe ser el terreno donde descargo?', cables: '¿Qué debe haber hacia arriba, sobre la batea?', gente: '¿Quién puede estar detrás del camión al descargar?', conos: '¿Cómo debe estar la zona de descarga?' }, cargador: { balde: '¿A qué altura debo llevar el balde?', gente: '¿Dónde debe estar el trabajador que va a pie?', vel: '¿A qué velocidad debo mover el cargador?', alarma: '¿Cómo deben ir las señales del cargador?' } };
+    const view = () => { const v = {}; C.fac.forEach(f => v[f.k] = state[f.k] || 'g'); return v; };
+    const draw = (a) => { window.__trk = 0; const sv_ = view(); $('bldS').innerHTML = isSim ? simScene(sv_, { X: 0, gap: sv_.dist === 'g' ? SIM.gG : SIM.gB, v: 0, cel: sv_.cel === 'b' }) : C.scene(sv_, a) + C.fail(sv_, a); };
+    const falta = () => C.fac.filter(f => !state[f.k]).length;
+    B.innerHTML = `<div class="actimg"><svg id="bldS" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg"></svg></div><div class="acthint" id="bldH"><b>Cómo se hace:</b><br>① En cada recuadro, toque la opción <b>CORRECTA</b> (la más segura).<br>② Cuando las ${C.fac.length} estén elegidas, toque el botón rojo.<br><i>Puede cambiar su elección las veces que quiera.</i></div>` +
+      C.fac.map((f, i) => { const o = order[i] ? [['g', f.g], ['b', f.b]] : [['b', f.b], ['g', f.g]]; return `<div class="bfac" data-k="${f.k}"><div class="bft"><span class="cfn">${i + 1}</span><span>${ICO[f.k] || ''} ${f.t}</span></div><div class="bfq">${(QS[q.build] || {})[f.k] || '¿Cuál es lo correcto?'}</div><div class="bfb">${o.map(([v, tx]) => `<button class="mb bo" data-v="${v}"><span class="bok">✔</span>${tx}</button>`).join('')}</div></div>`; }).join('') +
+      `<button class="simbtn" id="bldB" style="opacity:.55">Elija las ${C.fac.length} condiciones (faltan ${C.fac.length})</button>`;
     draw(0);
-    B.querySelectorAll('.mcol').forEach(r => r.querySelectorAll('.mb').forEach(b => b.onclick = () => {
-      if (done || busy) return; r.querySelectorAll('.mb').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); state[r.dataset.k] = b.dataset.v; draw(0);
-      try { SFX.play('ok'); } catch (e) {}
+    const refrescar = () => { const f = falta(); $('bldB').textContent = f ? 'Elija las ' + C.fac.length + ' condiciones (faltan ' + f + ')' : C.go; $('bldB').style.opacity = f ? '.55' : '1'; };
+    B.querySelectorAll('.bfac').forEach(r => r.querySelectorAll('.mb').forEach(b => b.onclick = () => {
+      if (done || busy) return; const k = r.dataset.k;
+      if (state[k] === b.dataset.v) { delete state[k]; b.classList.remove('sel'); } else { r.querySelectorAll('.mb').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); state[k] = b.dataset.v; }
+      r.classList.toggle('hecho', !!state[k]); draw(0); refrescar(); try { SFX.play('ok'); } catch (e) {}
     }));
+    const terminarIntento = (bad, choco) => {
+      if (!bad.length && !choco) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> ' + (isSim ? 'Frenó a tiempo y quedó a distancia segura.' : 'Maniobra segura: terreno, entorno y personas controlados.'); try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
+      $('bldH').innerHTML = '✖ <b>' + (isSim ? '¡Choque!' : 'Maniobra insegura.') + '</b> ' + bad.map(f => f.m).join(' ');
+      try { SFX.play('bad'); } catch (e) {}
+      if (tries >= 3) { done = true; $('bldH').innerHTML += ' <br>La condición segura era: ' + C.fac.map(f => f.g).join(' · ') + '.'; return setTimeout(() => answer(dummy(), false), 1800); }
+      $('bldH').innerHTML += '<br><b>Cambie las opciones que están mal y vuelva a probar</b> (le quedan ' + (3 - tries) + ' intentos).';
+      setTimeout(() => { busy = false; draw(0); }, 2200);
+    };
+    const correrSim = (bad) => {
+      const sv_ = view(), v0 = sv_.vel === 'g' ? SIM.vG : SIM.vB, gap0 = sv_.dist === 'g' ? SIM.gG : SIM.gB, rx = SIM.rBase + (sv_.cel === 'b' ? SIM.rCel : 0) + (sv_.luz === 'b' ? SIM.rLuz : 0);
+      let xl = gap0, xf = 0, vl = v0, vf = v0, tBr = 1.6, t = 0, last = performance.now(), crash = 0, choco = false, fSound = false, fb = false, end = 0, shake = 0, vfI = 0;
+      try { SFX.play('motor'); } catch (e) {}
+      const frame = now => {
+        const dt = Math.min(.05, (now - last) / 1000); last = now; t += dt;
+        const lBrake = t >= tBr, fBrake = t >= tBr + rx;
+        if (lBrake) vl = Math.max(0, vl - SIM.aL * dt);
+        if (fBrake && !choco) vf = Math.max(0, vf - SIM.aF * dt);
+        xl += vl * dt; xf += vf * dt;
+        if (fBrake && !fSound) { fSound = true; try { SFX.play('freno'); } catch (e) {} }
+        if (lBrake && !fb) { fb = true; try { SFX.play('bocina'); } catch (e) {} }
+        let gap = xl - xf;
+        if (gap <= 0 && !choco) { choco = true; vfI = vf; gap = 0; const vc = (vf + vl) * .5 * .55; vf = vc; vl = vc + 1.5; crash = .01; shake = 1; try { SFX.play('choque'); } catch (e) {} }
+        if (choco) { gap = 0; vf = Math.max(0, vf - 12 * dt); vl = Math.max(0, vl - 10 * dt); crash = Math.min(1.2, crash + dt * 1.1); shake = Math.max(0, shake - dt * 1.1); }
+        const dec = lBrake && vl > 0 ? Math.min(1, SIM.aL * .2) : 0, decF = fBrake && vf > 0 ? .9 : 0;
+        let msg = '', col = '#C62828';
+        if (choco) msg = '¡CHOQUE!'; else if (lBrake && !fBrake) { msg = '¡El de adelante frena! Usted reacciona…'; col = '#E65100'; } else if (fBrake && vf > 0) { msg = 'Usted frena…'; col = '#E65100'; } else if (!choco && vf <= 0 && lBrake) { msg = '✔ Frenó a tiempo'; col = '#2E7D32'; }
+        if (choco && vf <= .01 && vl <= .01) end = end || t;
+        const m = { X: xf, gap, v: vf, lb: lBrake && vl >= 0, fb: fBrake && vf > 0.01, pL: lBrake && vl > 0 ? 1.3 : 0, pF: fBrake && vf > 0 && !choco ? 1.5 : 0, pushL: choco ? Math.min(14, (crash) * 10) : 0, pushF: choco ? -Math.min(4, crash * 3) : 0, crash: choco ? crash : 0, shake: shake > 0, msg, col, cel: sv_.cel === 'b' };
+        window.__trk = 0; $('bldS').innerHTML = simScene(sv_, m);
+        const parado = vf <= .01 && vl <= .01 && t > tBr + .5;
+        if (parado) { if (!end) end = t; if (t - end > 1.2) return terminarIntento(bad, choco); }
+        raf = requestAnimationFrame(frame);
+      };
+      raf = requestAnimationFrame(frame);
+    };
     $('bldB').onclick = () => {
-      if (done || busy) return; busy = true; tries++;
-      const bad = C.fac.filter(f => state[f.k] === 'b'); let a = 0; const t0 = performance.now();
+      if (done || busy) return;
+      const f = falta(); if (f) { $('bldH').innerHTML = '⚠ Le faltan <b>' + f + '</b>. Toque una opción en cada recuadro que no tenga ✔.'; B.querySelectorAll('.bfac:not(.hecho)').forEach(r => { r.classList.add('falta'); setTimeout(() => r.classList.remove('falta'), 1400); }); try { SFX.play('bad'); } catch (e) {} return; }
+      busy = true; tries++;
+      const bad = C.fac.filter(f => state[f.k] === 'b');
+      if (isSim) return correrSim(bad);
+      let a = 0; const t0 = performance.now();
+      try { SFX.play(q.build === 'batea' ? 'descarga' : 'cargador'); } catch (e) {}
       const step = ts => {
         a = Math.min(30, (ts - t0) / 25); draw(a);
         if (a < 30) return requestAnimationFrame(step);
-        if (!bad.length) { done = true; $('bldH').innerHTML = '✔ <b>¡Excelente!</b> Maniobra segura: terreno, entorno y personas controlados.'; try { SFX.play('ok'); } catch (e) {} return answer(dummy(), true); }
-        $('bldH').innerHTML = '✖ <b>Maniobra insegura.</b> ' + bad.map(f => f.m).join(' ');
-        try { SFX.play('bad'); } catch (e) {}
-        if (tries >= 3) { done = true; $('bldH').innerHTML += ' <br>La condición segura era: ' + C.fac.map(f => f.g).join(' · ') + '.'; return setTimeout(() => answer(dummy(), false), 1800); }
-        setTimeout(() => { busy = false; draw(0); }, 1600);
+        terminarIntento(bad, false);
       };
       requestAnimationFrame(step);
     };
     window.scrollTo(0, 0); try { GUIA.hide(); } catch (e) {}
-    $('qTxt').dataset.voz = 'Pregunta ' + (st.qi + 1) + '. ' + q.q; try { leer([$('qTxt')]); sesGuardar('quiz'); } catch (e) {}
+    $('qTxt').dataset.voz = 'Pregunta ' + (st.qi + 1) + '. ' + q.q + ' En cada recuadro, toque la opción correcta. Cuando termine, toque el botón rojo.'; try { leer([$('qTxt')]); sesGuardar('quiz'); } catch (e) {}
   }
   const r0 = window.renderAct;
   window.renderAct = q => q.build ? actBuild(q) : r0(q);
