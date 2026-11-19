@@ -5511,8 +5511,9 @@ NORMAS.enfermedades = { obj: 'Que la persona trabajadora reconozca los efectos e
   QUIETAS.forEach(k => { const f = S[k]; if (!f) return; S[k] = function () { vivo = true; try { return f.apply(this, arguments).replace(/(<circle [^>]*fill="(?:#2E7D32|#D7262B)" stroke="#fff" stroke-width="3"\/><path [^>]*\/>)/g, '<g class="an-pulse">$1</g>'); } finally { vivo = false; } }; });
 })();
 // ===== Inducción de Prevención de Riesgos (IRL) · charla madre, obligatoria antes de todo · vigencia 18 meses =====
-var IND_REGLAMENTOS = {
-  'Transportes Claudio Lagos': 'https://drive.google.com/drive/folders/1OcRE95_XAmjOyLduBK4vku_FGAmirdd8' };
+var IND_REGLAMENTOS = { 'Transportes Claudio Lagos EIRL': 1, 'Transportes Santa Sofía': 1, 'Servicios Mecánicos Claudio Lagos': 1, 'Fabiola Gutiérrez': 1, 'Claudio Lagos Morales': 1 };
+// El Reglamento Interno (RIOHS) lo entrega el servidor: siempre el PDF más reciente de la empresa del trabajador, solo para leer
+var indRiohs = k => SCRIPT_URL + '?riohs=1&e=' + encodeURIComponent(k || '');
 var IND_FORMULARIO = 'https://docs.google.com/forms/d/16ZpOz8VJtD9ZvwYeVaYjJO--z3SnpRWykrn2ndw1wWA/viewform';
 var IND_MESES = 18;
 var IND_TRANSV = '<li><b>Para todos:</b> caídas al mismo y a distinto nivel, golpes por caída de objetos, cortes, tránsito de maquinaria, sobreesfuerzo, radiación UV, sismo, incendio y accidente de trayecto. <span class="ctrl">✅ Control:</span> EPP básico siempre, orden y aseo, vanos tapados, rutas peatonales, contacto visual con operadores, nunca bajo cargas, conocer la vía de evacuación y el punto de encuentro.</li>';
@@ -8697,9 +8698,8 @@ function prepInduccion() {
   if (c) c.x = 'Cada puesto tiene sus riesgos. ' + (secs && secs.length ? 'Los de tu cargo (' + (p.cargo || '') + '):' : 'Los principales en la empresa:') + '<ul>' + (secs && secs.length ? secs : Object.keys(IND_PUESTO)).map(s => IND_PUESTO[s] || '').join('') + IND_TRANSV + '</ul>';
   const u = t.learn[t.learn.length - 1], emp = p && p.empresa && IND_REGLAMENTOS[p.empresa] ? p.empresa : null;
   const mano = '<span class="mano">👉</span>';
-  const links = (emp ? `<a class="indbtn" target="_blank" rel="noopener" href="${IND_REGLAMENTOS[emp]}">${mano}<span>Pincha aquí para descargar tu Reglamento Interno<small>${emp}</small></span></a>`
-    : (p && p.empresa && !/^revisar/i.test(p.empresa)) ? `<div class="indtit">📘 Pide a tu jefatura el Reglamento Interno de ${p.empresa}.</div>`
-    : '<div class="indtit">👉 Pincha aquí para descargar el Reglamento Interno de tu empresa:</div>' + Object.keys(IND_REGLAMENTOS).map(k => `<a class="indbtn" target="_blank" rel="noopener" href="${IND_REGLAMENTOS[k]}">📘 ${k}</a>`).join(''))
+  const links = (emp ? `<a class="indbtn" target="_blank" rel="noopener" href="${indRiohs(emp)}">${mano}<span>Pincha aquí para leer tu Reglamento Interno<small>${emp}</small></span></a>`
+    : '<div class="indtit">👉 Pincha aquí para leer el Reglamento Interno de tu empresa:</div>' + Object.keys(IND_REGLAMENTOS).map(k => `<a class="indbtn" target="_blank" rel="noopener" href="${indRiohs(k)}">📘 ${k}</a>`).join(''))
     + (p ? '' : `<a class="indbtn" target="_blank" rel="noopener" href="${IND_FORMULARIO}">📝 Ficha de inscripción de trabajadores</a>`);
   u.x = u.x.replace(/<div class="indlinks"[\s\S]*$/, '') + `<div class="indlinks">${links}</div>`;
 }
