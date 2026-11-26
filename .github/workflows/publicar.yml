@@ -19,6 +19,8 @@ jobs:
           grep -q "<title>Capacitaciones Transportes Claudio Lagos" index.html
           grep -qi "<!doctype html" panel.html
           grep -qi "<!doctype html" inscripcion.html
+          python3 parche_nombre.py AN
+          grep -q "nombre_pila.js" index.html
           touch .nojekyll
       - name: Guardar en el repositorio
         run: |
